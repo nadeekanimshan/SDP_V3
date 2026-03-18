@@ -22,6 +22,18 @@ const createAppointment=async(req:Request,res:Response,next:NextFunction)=>{
              res.status(400).json({message:"Date is required"});
              return;
         }
+
+        // Validate that the appointment is not in the past
+        const appointmentDate = new Date(date);
+        const [hours, minutes] = startTime.split('.').map(Number);
+        appointmentDate.setHours(hours, minutes, 0, 0);
+        
+        const now = new Date();
+        if (appointmentDate < now) {
+            res.status(400).json({message:"Cannot create appointments in the past"});
+            return;
+        }
+
         const appointments=await AppointmentService.createAppointment({date,startTime,endTime,user_id});
         res.status(200).json(appointments);
     } catch (error) {

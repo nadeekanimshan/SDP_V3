@@ -55,6 +55,12 @@ export default function VocalRecordingAppointment() {
     return day >= 1 && day <= 5;
   };
 
+  const isPastDate = (date: Date) => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    return date < today;
+  };
+
   // Fetch Appointments
   useEffect(() => {
     if (!selectedDate) return;
@@ -76,11 +82,19 @@ export default function VocalRecordingAppointment() {
         setBookedSlots(normalizedSlot);
 
         const bookedTimes = normalizedSlot.bookedTimes || [];
-        const available = timeSlots.filter((time) => {
+        let available = timeSlots.filter((time) => {
           return !bookedTimes.some(
             ([start, end]) => time >= start && time < end
           );
         });
+
+        // Filter out past time slots if the selected date is today
+        const now = new Date();
+        const isToday = format(selectedDate, "yyyy-MM-dd") === format(now, "yyyy-MM-dd");
+        if (isToday) {
+          const currentTime = format(now, "HH:mm");
+          available = available.filter(time => time > currentTime);
+        }
 
         setAvailableTimes(available);
         setStartTime("");
@@ -91,7 +105,17 @@ export default function VocalRecordingAppointment() {
           date: format(selectedDate, "yyyy-MM-dd"),
           bookedTimes: []
         });
-        setAvailableTimes([...timeSlots]);
+        
+        // Still filter past times for today
+        let available = [...timeSlots];
+        const now = new Date();
+        const isToday = format(selectedDate, "yyyy-MM-dd") === format(now, "yyyy-MM-dd");
+        if (isToday) {
+          const currentTime = format(now, "HH:mm");
+          available = available.filter(time => time > currentTime);
+        }
+        
+        setAvailableTimes(available);
         toast.error("Failed to fetch available time slots");
       } finally {
         setIsLoading(false);
@@ -128,6 +152,17 @@ export default function VocalRecordingAppointment() {
   const handleBooking = async () => {
     if (!selectedDate || !startTime || !endTime || !bookedSlots) return;
 
+    // Validate that the appointment is not in the past
+    const now = new Date();
+    const appointmentDateTime = new Date(selectedDate);
+    const [hours, minutes] = startTime.split(':').map(Number);
+    appointmentDateTime.setHours(hours, minutes, 0, 0);
+
+    if (appointmentDateTime < now) {
+      toast.error("Cannot book appointments in the past");
+      return;
+    }
+
     setIsLoading(true);
     try {
       await UseAxios('appointments', "POST", {
@@ -153,11 +188,19 @@ export default function VocalRecordingAppointment() {
 
       setBookedSlots(updatedSlot);
       const bookedTimes = updatedSlot.bookedTimes || [];
-      const available = timeSlots.filter((time) => {
+      let available = timeSlots.filter((time) => {
         return !bookedTimes.some(
           ([start, end]) => time >= start && time < end
         );
       });
+
+      // Filter out past time slots if the selected date is today
+      const now = new Date();
+      const isToday = format(selectedDate, "yyyy-MM-dd") === format(now, "yyyy-MM-dd");
+      if (isToday) {
+        const currentTime = format(now, "HH:mm");
+        available = available.filter(time => time > currentTime);
+      }
 
       setAvailableTimes(available);
       setStartTime("");
@@ -193,7 +236,7 @@ export default function VocalRecordingAppointment() {
               mode="single"
               selected={selectedDate}
               onSelect={setSelectedDate}
-              disabled={(date) => !isWeekday(date)}
+              disabled={(date) => !isWeekday(date) || isPastDate(date)}
               modifiers={{
                 booked: selectedDate && bookedSlots ? 
                   bookedSlots.bookedTimes.flatMap(([start, end]) => {
@@ -212,6 +255,7 @@ export default function VocalRecordingAppointment() {
             />
             <div className="mt-4 text-sm text-gray-600">
               <p>• Select a weekday (Monday-Friday)</p>
+              <p>• Past dates are disabled</p>
               <p>• Red slots indicate booked times</p>
             </div>
           </div>
