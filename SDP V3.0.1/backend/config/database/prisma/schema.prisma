@@ -1,0 +1,173 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../prisma/generated/prisma"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id             Int       @id @default(autoincrement())
+  email          String    @unique
+  firstName      String?   @map("first_name")
+  lastName       String?   @map("last_name")
+  password       String
+  typeId         Int       @map("type_id")
+  contactNumber  String?   @map("contact_number")
+  address        String?
+  city           String?
+  district       String?
+  createdAt      DateTime  @default(now()) @map("created_at")
+  updatedAt      DateTime  @updatedAt @map("updated_at") @default(now())
+  deleteStatus   Boolean   @default(false)
+
+  type           UserType   @relation(fields: [typeId], references: [id])
+  attendance     Attendance[]
+  appointments   VocalRecordingAppointmentDetail[]
+  class_students Class_Student[]
+  payments       Payment[]
+  
+
+  @@map("user")
+}
+
+model UserType {
+  id    Int     @id @default(autoincrement())
+  name  String  @unique @map("type")
+
+  users User[]
+
+  @@map("user_type")
+}
+
+model Attendance {
+  id         Int      @id @default(autoincrement())
+  user_id     Int      @map("user_id")
+  date       DateTime
+  time_in     DateTime @map("time_in")
+  time_out    DateTime? @map("time_out")
+  note       String?
+
+  user       User     @relation(fields: [user_id], references: [id])
+
+  @@map("attendance")
+}
+
+model Event {
+  id           Int       @id @default(autoincrement())
+  title        String
+  description  String?
+  startDate    DateTime 
+  endDate      DateTime?
+  location     String?
+  time         DateTime?
+  note         String?
+
+  @@map("event")
+}
+
+model Class {
+  id           Int       @id @default(autoincrement())
+  name         String
+  description  String?
+  duration     String
+  day          String
+  startTime    String
+  endTime      String? 
+  installments_count Int
+  installments_price Decimal
+  full_price    Decimal
+  startDate    DateTime @default(now())
+
+  class_students Class_Student[]
+
+  @@map("class")
+}
+
+model Class_Student {
+    id           Int       @id @default(autoincrement())
+    class_id     Int      @map("class_id")
+    student_id   Int      @map("student_id")
+    createdAt      DateTime  @default(now()) @map("created_at")
+    updatedAt      DateTime  @updatedAt @map("updated_at") @default(now())
+    deleteStatus   Boolean   @default(false)
+
+    class       Class     @relation(fields: [class_id], references: [id])
+    student     User     @relation(fields: [student_id], references: [id])
+    class_installments Class_Installment[]
+
+    @@map("class_student")
+}
+
+model Class_Installment {
+    id           Int       @id @default(autoincrement())
+    class_student_id     Int      @map("class_student_id")
+    amount     Decimal
+    status     String @default("Pending")
+    paymentDate DateTime @default(now()) @map("payment_date")
+    paymentMethod String @default("Cash")
+    createdAt      DateTime  @default(now()) @map("created_at")
+    updatedAt      DateTime  @updatedAt @map("updated_at") @default(now())
+    deleteStatus   Boolean   @default(false)
+    installments_Due_Date DateTime @default(now()) @map("installments_due_date")
+    
+
+    class_student       Class_Student     @relation(fields: [class_student_id], references: [id])
+
+    @@map("class_installment")
+}
+
+model VocalRecordingAppointment {
+    id           Int       @id @default(autoincrement())
+    date       String
+    status     String
+    note       String?
+    details    VocalRecordingAppointmentDetail[]
+
+    @@map("vocal_recording_appointment")
+}
+
+model VocalRecordingAppointmentDetail {
+    id           Int       @id @default(autoincrement())
+    appointment_id     Int      @map("appointment_id")
+    time_in     String
+    time_out    String
+    note       String?
+    user_id     Int      @map("user_id")
+    status     String @default("Pending")
+    isCancel   Boolean @default(false)
+
+    user       User     @relation(fields: [user_id], references: [id])
+    appointment       VocalRecordingAppointment     @relation(fields: [appointment_id], references: [id])
+    payments Payment[]
+
+    @@map("vocal_recording_appointment_detail")
+}
+
+model Payment {
+    id           Int       @id @default(autoincrement())
+    user_id     Int      @map("user_id")
+    amount     Decimal
+    note       String?
+    status     String @default("Pending")
+    paymentDate DateTime @default(now()) @map("payment_date")
+    paymentMethod String @default("Cash")
+    paymentType PaymentType @default(Appointment)
+    createdAt      DateTime  @default(now()) @map("created_at")
+    updatedAt      DateTime  @updatedAt @map("updated_at") @default(now())
+    deleteStatus   Boolean   @default(false)
+    appointment_id Int @map("appointment_id")
+
+    user       User     @relation(fields: [user_id], references: [id])
+    appointment       VocalRecordingAppointmentDetail     @relation(fields: [appointment_id], references: [id])
+
+    @@map("payment")
+}
+
+enum PaymentType {
+    Appointment
+    Course_Installment
+}
+
