@@ -133,7 +133,9 @@ exports.Prisma.UserScalarFieldEnum = {
   district: 'district',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
-  deleteStatus: 'deleteStatus'
+  deleteStatus: 'deleteStatus',
+  resetToken: 'resetToken',
+  resetTokenExpiry: 'resetTokenExpiry'
 };
 
 exports.Prisma.UserTypeScalarFieldEnum = {
@@ -261,7 +263,8 @@ exports.Prisma.UserOrderByRelevanceFieldEnum = {
   contactNumber: 'contactNumber',
   address: 'address',
   city: 'city',
-  district: 'district'
+  district: 'district',
+  resetToken: 'resetToken'
 };
 
 exports.Prisma.UserTypeOrderByRelevanceFieldEnum = {

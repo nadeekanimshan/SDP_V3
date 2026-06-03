@@ -22,6 +22,8 @@ model User {
   createdAt      DateTime  @default(now()) @map("created_at")
   updatedAt      DateTime  @updatedAt @map("updated_at") @default(now())
   deleteStatus   Boolean   @default(false)
+  resetToken     String?   @map("reset_token")
+  resetTokenExpiry DateTime? @map("reset_token_expiry")
 
   type           UserType   @relation(fields: [typeId], references: [id])
   attendance     Attendance[]

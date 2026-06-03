@@ -79,12 +79,46 @@ const updateProfile=async(req:Request,res:Response,next:NextFunction)=>{
     }
 }
 
+const forgotPassword=async(req:Request,res:Response,next:NextFunction)=>{
+    try {
+        const {email}=req.body
+        if(!email){
+            res.status(400).json({message:"Email is required"})
+            return;
+        }
+        const result=await AuthService.forgotPassword(email)
+        res.status(200).json(result)
+    } catch (error) {
+        next(error)
+    }
+}
+
+const resetPassword=async(req:Request,res:Response,next:NextFunction)=>{
+    try {
+        const {token,newPassword}=req.body
+        if(!token || !newPassword){
+            res.status(400).json({message:"Token and new password are required"})
+            return;
+        }
+        if(newPassword.length < 6){
+            res.status(400).json({message:"Password must be at least 6 characters"})
+            return;
+        }
+        const result=await AuthService.resetPassword(token,newPassword)
+        res.status(200).json(result)
+    } catch (error) {
+        next(error)
+    }
+}
+
 const AuthController={
     login,
     register,
     refreshToken,
     getType,
-    updateProfile
+    updateProfile,
+    forgotPassword,
+    resetPassword
 }
 
 export default AuthController

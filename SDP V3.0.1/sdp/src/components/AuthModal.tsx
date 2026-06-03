@@ -260,6 +260,17 @@ export default function AuthModal() {
           </button>
         </form>
 
+        {isLogin && (
+          <div className="mt-3 text-center">
+            <button
+              onClick={() => navigate('/forgot-password')}
+              className="text-sm text-blue-600 hover:text-blue-800 hover:underline"
+            >
+              Forgot Password?
+            </button>
+          </div>
+        )}
+
         <div className="mt-4 text-center">
           <button
             onClick={() => setIsLogin(!isLogin)}

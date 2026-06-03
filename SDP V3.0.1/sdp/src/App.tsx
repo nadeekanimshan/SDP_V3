@@ -9,6 +9,8 @@ import { Elements } from "@stripe/react-stripe-js"
 import { loadStripe } from "@stripe/stripe-js"
 import AuthModal from "./components/AuthModal"
 import AdminDashbord from "./page/admin/AdminDashbord"
+import ForgotPassword from "./page/ForgotPassword"
+import ResetPassword from "./page/ResetPassword"
 
 function ScrollToTop() {
   const { pathname } = useLocation();
@@ -31,6 +33,8 @@ function App() {
         <Route path="/" element={<MainPage />} /> 
         <Route path="/admin" element={<AdminDashbord />} /> 
         <Route path="/auth" element={<AuthModal />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
         
         <Route path="/events" element={<Event />} />
         <Route path="/vocal-traning-class" element={<VocalTraningClass />} >

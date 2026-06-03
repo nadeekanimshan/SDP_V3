@@ -9,19 +9,21 @@ datasource db {
 }
 
 model User {
-  id            Int      @id @default(autoincrement())
-  email         String   @unique
-  firstName     String?  @map("first_name")
-  lastName      String?  @map("last_name")
-  password      String
-  typeId        Int      @map("type_id")
-  contactNumber String?  @map("contact_number")
-  address       String?
-  city          String?
-  district      String?
-  createdAt     DateTime @default(now()) @map("created_at")
-  updatedAt     DateTime @default(now()) @updatedAt @map("updated_at")
-  deleteStatus  Boolean  @default(false)
+  id               Int       @id @default(autoincrement())
+  email            String    @unique
+  firstName        String?   @map("first_name")
+  lastName         String?   @map("last_name")
+  password         String
+  typeId           Int       @map("type_id")
+  contactNumber    String?   @map("contact_number")
+  address          String?
+  city             String?
+  district         String?
+  createdAt        DateTime  @default(now()) @map("created_at")
+  updatedAt        DateTime  @default(now()) @updatedAt @map("updated_at")
+  deleteStatus     Boolean   @default(false)
+  resetToken       String?   @map("reset_token")
+  resetTokenExpiry DateTime? @map("reset_token_expiry")
 
   type           UserType                          @relation(fields: [typeId], references: [id])
   attendance     Attendance[]

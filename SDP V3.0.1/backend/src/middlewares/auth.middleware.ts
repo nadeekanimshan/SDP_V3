@@ -8,7 +8,7 @@ const tokenService = new TokenService({
   refreshTokenExpiresIn: 86400 // 1 day
 });
 
-const openRoutes = ["/api/auth/login", "/api/auth/register","/api/auth/refresh-token","/api/events","/api/auth/type"];
+const openRoutes = ["/api/auth/login", "/api/auth/register","/api/auth/refresh-token","/api/events","/api/auth/type","/api/auth/forgot-password","/api/auth/reset-password"];
 
 // 🔐 Authentication middleware
 export const authenticate = (req: Request, res: Response, next: NextFunction) => {
