@@ -49,6 +49,11 @@ export type Class_Student = $Result.DefaultSelection<Prisma.$Class_StudentPayloa
  */
 export type Class_Installment = $Result.DefaultSelection<Prisma.$Class_InstallmentPayload>
 /**
+ * Model SlotAvailability
+ * 
+ */
+export type SlotAvailability = $Result.DefaultSelection<Prisma.$SlotAvailabilityPayload>
+/**
  * Model VocalRecordingAppointment
  * 
  */
@@ -275,6 +280,16 @@ export class PrismaClient<
     * ```
     */
   get class_Installment(): Prisma.Class_InstallmentDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.slotAvailability`: Exposes CRUD operations for the **SlotAvailability** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more SlotAvailabilities
+    * const slotAvailabilities = await prisma.slotAvailability.findMany()
+    * ```
+    */
+  get slotAvailability(): Prisma.SlotAvailabilityDelegate<ExtArgs, ClientOptions>;
 
   /**
    * `prisma.vocalRecordingAppointment`: Exposes CRUD operations for the **VocalRecordingAppointment** model.
@@ -752,6 +767,7 @@ export namespace Prisma {
     Class: 'Class',
     Class_Student: 'Class_Student',
     Class_Installment: 'Class_Installment',
+    SlotAvailability: 'SlotAvailability',
     VocalRecordingAppointment: 'VocalRecordingAppointment',
     VocalRecordingAppointmentDetail: 'VocalRecordingAppointmentDetail',
     Payment: 'Payment'
@@ -773,7 +789,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "user" | "userType" | "attendance" | "event" | "class" | "class_Student" | "class_Installment" | "vocalRecordingAppointment" | "vocalRecordingAppointmentDetail" | "payment"
+      modelProps: "user" | "userType" | "attendance" | "event" | "class" | "class_Student" | "class_Installment" | "slotAvailability" | "vocalRecordingAppointment" | "vocalRecordingAppointmentDetail" | "payment"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -1239,6 +1255,72 @@ export namespace Prisma {
           }
         }
       }
+      SlotAvailability: {
+        payload: Prisma.$SlotAvailabilityPayload<ExtArgs>
+        fields: Prisma.SlotAvailabilityFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.SlotAvailabilityFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SlotAvailabilityPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.SlotAvailabilityFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SlotAvailabilityPayload>
+          }
+          findFirst: {
+            args: Prisma.SlotAvailabilityFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SlotAvailabilityPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.SlotAvailabilityFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SlotAvailabilityPayload>
+          }
+          findMany: {
+            args: Prisma.SlotAvailabilityFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SlotAvailabilityPayload>[]
+          }
+          create: {
+            args: Prisma.SlotAvailabilityCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SlotAvailabilityPayload>
+          }
+          createMany: {
+            args: Prisma.SlotAvailabilityCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          delete: {
+            args: Prisma.SlotAvailabilityDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SlotAvailabilityPayload>
+          }
+          update: {
+            args: Prisma.SlotAvailabilityUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SlotAvailabilityPayload>
+          }
+          deleteMany: {
+            args: Prisma.SlotAvailabilityDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.SlotAvailabilityUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          upsert: {
+            args: Prisma.SlotAvailabilityUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$SlotAvailabilityPayload>
+          }
+          aggregate: {
+            args: Prisma.SlotAvailabilityAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateSlotAvailability>
+          }
+          groupBy: {
+            args: Prisma.SlotAvailabilityGroupByArgs<ExtArgs>
+            result: $Utils.Optional<SlotAvailabilityGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.SlotAvailabilityCountArgs<ExtArgs>
+            result: $Utils.Optional<SlotAvailabilityCountAggregateOutputType> | number
+          }
+        }
+      }
       VocalRecordingAppointment: {
         payload: Prisma.$VocalRecordingAppointmentPayload<ExtArgs>
         fields: Prisma.VocalRecordingAppointmentFieldRefs
@@ -1528,6 +1610,7 @@ export namespace Prisma {
     class?: ClassOmit
     class_Student?: Class_StudentOmit
     class_Installment?: Class_InstallmentOmit
+    slotAvailability?: SlotAvailabilityOmit
     vocalRecordingAppointment?: VocalRecordingAppointmentOmit
     vocalRecordingAppointmentDetail?: VocalRecordingAppointmentDetailOmit
     payment?: PaymentOmit
@@ -4968,6 +5051,7 @@ export namespace Prisma {
     endDate: Date | null
     location: string | null
     time: Date | null
+    eventUrl: string | null
     note: string | null
   }
 
@@ -4979,6 +5063,7 @@ export namespace Prisma {
     endDate: Date | null
     location: string | null
     time: Date | null
+    eventUrl: string | null
     note: string | null
   }
 
@@ -4990,6 +5075,7 @@ export namespace Prisma {
     endDate: number
     location: number
     time: number
+    eventUrl: number
     note: number
     _all: number
   }
@@ -5011,6 +5097,7 @@ export namespace Prisma {
     endDate?: true
     location?: true
     time?: true
+    eventUrl?: true
     note?: true
   }
 
@@ -5022,6 +5109,7 @@ export namespace Prisma {
     endDate?: true
     location?: true
     time?: true
+    eventUrl?: true
     note?: true
   }
 
@@ -5033,6 +5121,7 @@ export namespace Prisma {
     endDate?: true
     location?: true
     time?: true
+    eventUrl?: true
     note?: true
     _all?: true
   }
@@ -5131,6 +5220,7 @@ export namespace Prisma {
     endDate: Date | null
     location: string | null
     time: Date | null
+    eventUrl: string | null
     note: string | null
     _count: EventCountAggregateOutputType | null
     _avg: EventAvgAggregateOutputType | null
@@ -5161,6 +5251,7 @@ export namespace Prisma {
     endDate?: boolean
     location?: boolean
     time?: boolean
+    eventUrl?: boolean
     note?: boolean
   }, ExtArgs["result"]["event"]>
 
@@ -5174,10 +5265,11 @@ export namespace Prisma {
     endDate?: boolean
     location?: boolean
     time?: boolean
+    eventUrl?: boolean
     note?: boolean
   }
 
-  export type EventOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "title" | "description" | "startDate" | "endDate" | "location" | "time" | "note", ExtArgs["result"]["event"]>
+  export type EventOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "title" | "description" | "startDate" | "endDate" | "location" | "time" | "eventUrl" | "note", ExtArgs["result"]["event"]>
 
   export type $EventPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "Event"
@@ -5190,6 +5282,7 @@ export namespace Prisma {
       endDate: Date | null
       location: string | null
       time: Date | null
+      eventUrl: string | null
       note: string | null
     }, ExtArgs["result"]["event"]>
     composites: {}
@@ -5567,6 +5660,7 @@ export namespace Prisma {
     readonly endDate: FieldRef<"Event", 'DateTime'>
     readonly location: FieldRef<"Event", 'String'>
     readonly time: FieldRef<"Event", 'DateTime'>
+    readonly eventUrl: FieldRef<"Event", 'String'>
     readonly note: FieldRef<"Event", 'String'>
   }
     
@@ -8999,6 +9093,911 @@ export namespace Prisma {
 
 
   /**
+   * Model SlotAvailability
+   */
+
+  export type AggregateSlotAvailability = {
+    _count: SlotAvailabilityCountAggregateOutputType | null
+    _avg: SlotAvailabilityAvgAggregateOutputType | null
+    _sum: SlotAvailabilitySumAggregateOutputType | null
+    _min: SlotAvailabilityMinAggregateOutputType | null
+    _max: SlotAvailabilityMaxAggregateOutputType | null
+  }
+
+  export type SlotAvailabilityAvgAggregateOutputType = {
+    id: number | null
+  }
+
+  export type SlotAvailabilitySumAggregateOutputType = {
+    id: number | null
+  }
+
+  export type SlotAvailabilityMinAggregateOutputType = {
+    id: number | null
+    date: string | null
+    slotTime: string | null
+    isAvailable: boolean | null
+  }
+
+  export type SlotAvailabilityMaxAggregateOutputType = {
+    id: number | null
+    date: string | null
+    slotTime: string | null
+    isAvailable: boolean | null
+  }
+
+  export type SlotAvailabilityCountAggregateOutputType = {
+    id: number
+    date: number
+    slotTime: number
+    isAvailable: number
+    _all: number
+  }
+
+
+  export type SlotAvailabilityAvgAggregateInputType = {
+    id?: true
+  }
+
+  export type SlotAvailabilitySumAggregateInputType = {
+    id?: true
+  }
+
+  export type SlotAvailabilityMinAggregateInputType = {
+    id?: true
+    date?: true
+    slotTime?: true
+    isAvailable?: true
+  }
+
+  export type SlotAvailabilityMaxAggregateInputType = {
+    id?: true
+    date?: true
+    slotTime?: true
+    isAvailable?: true
+  }
+
+  export type SlotAvailabilityCountAggregateInputType = {
+    id?: true
+    date?: true
+    slotTime?: true
+    isAvailable?: true
+    _all?: true
+  }
+
+  export type SlotAvailabilityAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which SlotAvailability to aggregate.
+     */
+    where?: SlotAvailabilityWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of SlotAvailabilities to fetch.
+     */
+    orderBy?: SlotAvailabilityOrderByWithRelationInput | SlotAvailabilityOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: SlotAvailabilityWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` SlotAvailabilities from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` SlotAvailabilities.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned SlotAvailabilities
+    **/
+    _count?: true | SlotAvailabilityCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: SlotAvailabilityAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: SlotAvailabilitySumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: SlotAvailabilityMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: SlotAvailabilityMaxAggregateInputType
+  }
+
+  export type GetSlotAvailabilityAggregateType<T extends SlotAvailabilityAggregateArgs> = {
+        [P in keyof T & keyof AggregateSlotAvailability]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateSlotAvailability[P]>
+      : GetScalarType<T[P], AggregateSlotAvailability[P]>
+  }
+
+
+
+
+  export type SlotAvailabilityGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: SlotAvailabilityWhereInput
+    orderBy?: SlotAvailabilityOrderByWithAggregationInput | SlotAvailabilityOrderByWithAggregationInput[]
+    by: SlotAvailabilityScalarFieldEnum[] | SlotAvailabilityScalarFieldEnum
+    having?: SlotAvailabilityScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: SlotAvailabilityCountAggregateInputType | true
+    _avg?: SlotAvailabilityAvgAggregateInputType
+    _sum?: SlotAvailabilitySumAggregateInputType
+    _min?: SlotAvailabilityMinAggregateInputType
+    _max?: SlotAvailabilityMaxAggregateInputType
+  }
+
+  export type SlotAvailabilityGroupByOutputType = {
+    id: number
+    date: string
+    slotTime: string
+    isAvailable: boolean
+    _count: SlotAvailabilityCountAggregateOutputType | null
+    _avg: SlotAvailabilityAvgAggregateOutputType | null
+    _sum: SlotAvailabilitySumAggregateOutputType | null
+    _min: SlotAvailabilityMinAggregateOutputType | null
+    _max: SlotAvailabilityMaxAggregateOutputType | null
+  }
+
+  type GetSlotAvailabilityGroupByPayload<T extends SlotAvailabilityGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<SlotAvailabilityGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof SlotAvailabilityGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], SlotAvailabilityGroupByOutputType[P]>
+            : GetScalarType<T[P], SlotAvailabilityGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type SlotAvailabilitySelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    date?: boolean
+    slotTime?: boolean
+    isAvailable?: boolean
+  }, ExtArgs["result"]["slotAvailability"]>
+
+
+
+  export type SlotAvailabilitySelectScalar = {
+    id?: boolean
+    date?: boolean
+    slotTime?: boolean
+    isAvailable?: boolean
+  }
+
+  export type SlotAvailabilityOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "date" | "slotTime" | "isAvailable", ExtArgs["result"]["slotAvailability"]>
+
+  export type $SlotAvailabilityPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "SlotAvailability"
+    objects: {}
+    scalars: $Extensions.GetPayloadResult<{
+      id: number
+      date: string
+      slotTime: string
+      isAvailable: boolean
+    }, ExtArgs["result"]["slotAvailability"]>
+    composites: {}
+  }
+
+  type SlotAvailabilityGetPayload<S extends boolean | null | undefined | SlotAvailabilityDefaultArgs> = $Result.GetResult<Prisma.$SlotAvailabilityPayload, S>
+
+  type SlotAvailabilityCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<SlotAvailabilityFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: SlotAvailabilityCountAggregateInputType | true
+    }
+
+  export interface SlotAvailabilityDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['SlotAvailability'], meta: { name: 'SlotAvailability' } }
+    /**
+     * Find zero or one SlotAvailability that matches the filter.
+     * @param {SlotAvailabilityFindUniqueArgs} args - Arguments to find a SlotAvailability
+     * @example
+     * // Get one SlotAvailability
+     * const slotAvailability = await prisma.slotAvailability.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends SlotAvailabilityFindUniqueArgs>(args: SelectSubset<T, SlotAvailabilityFindUniqueArgs<ExtArgs>>): Prisma__SlotAvailabilityClient<$Result.GetResult<Prisma.$SlotAvailabilityPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one SlotAvailability that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {SlotAvailabilityFindUniqueOrThrowArgs} args - Arguments to find a SlotAvailability
+     * @example
+     * // Get one SlotAvailability
+     * const slotAvailability = await prisma.slotAvailability.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends SlotAvailabilityFindUniqueOrThrowArgs>(args: SelectSubset<T, SlotAvailabilityFindUniqueOrThrowArgs<ExtArgs>>): Prisma__SlotAvailabilityClient<$Result.GetResult<Prisma.$SlotAvailabilityPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first SlotAvailability that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {SlotAvailabilityFindFirstArgs} args - Arguments to find a SlotAvailability
+     * @example
+     * // Get one SlotAvailability
+     * const slotAvailability = await prisma.slotAvailability.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends SlotAvailabilityFindFirstArgs>(args?: SelectSubset<T, SlotAvailabilityFindFirstArgs<ExtArgs>>): Prisma__SlotAvailabilityClient<$Result.GetResult<Prisma.$SlotAvailabilityPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first SlotAvailability that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {SlotAvailabilityFindFirstOrThrowArgs} args - Arguments to find a SlotAvailability
+     * @example
+     * // Get one SlotAvailability
+     * const slotAvailability = await prisma.slotAvailability.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends SlotAvailabilityFindFirstOrThrowArgs>(args?: SelectSubset<T, SlotAvailabilityFindFirstOrThrowArgs<ExtArgs>>): Prisma__SlotAvailabilityClient<$Result.GetResult<Prisma.$SlotAvailabilityPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more SlotAvailabilities that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {SlotAvailabilityFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all SlotAvailabilities
+     * const slotAvailabilities = await prisma.slotAvailability.findMany()
+     * 
+     * // Get first 10 SlotAvailabilities
+     * const slotAvailabilities = await prisma.slotAvailability.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const slotAvailabilityWithIdOnly = await prisma.slotAvailability.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends SlotAvailabilityFindManyArgs>(args?: SelectSubset<T, SlotAvailabilityFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SlotAvailabilityPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a SlotAvailability.
+     * @param {SlotAvailabilityCreateArgs} args - Arguments to create a SlotAvailability.
+     * @example
+     * // Create one SlotAvailability
+     * const SlotAvailability = await prisma.slotAvailability.create({
+     *   data: {
+     *     // ... data to create a SlotAvailability
+     *   }
+     * })
+     * 
+     */
+    create<T extends SlotAvailabilityCreateArgs>(args: SelectSubset<T, SlotAvailabilityCreateArgs<ExtArgs>>): Prisma__SlotAvailabilityClient<$Result.GetResult<Prisma.$SlotAvailabilityPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many SlotAvailabilities.
+     * @param {SlotAvailabilityCreateManyArgs} args - Arguments to create many SlotAvailabilities.
+     * @example
+     * // Create many SlotAvailabilities
+     * const slotAvailability = await prisma.slotAvailability.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends SlotAvailabilityCreateManyArgs>(args?: SelectSubset<T, SlotAvailabilityCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Delete a SlotAvailability.
+     * @param {SlotAvailabilityDeleteArgs} args - Arguments to delete one SlotAvailability.
+     * @example
+     * // Delete one SlotAvailability
+     * const SlotAvailability = await prisma.slotAvailability.delete({
+     *   where: {
+     *     // ... filter to delete one SlotAvailability
+     *   }
+     * })
+     * 
+     */
+    delete<T extends SlotAvailabilityDeleteArgs>(args: SelectSubset<T, SlotAvailabilityDeleteArgs<ExtArgs>>): Prisma__SlotAvailabilityClient<$Result.GetResult<Prisma.$SlotAvailabilityPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one SlotAvailability.
+     * @param {SlotAvailabilityUpdateArgs} args - Arguments to update one SlotAvailability.
+     * @example
+     * // Update one SlotAvailability
+     * const slotAvailability = await prisma.slotAvailability.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends SlotAvailabilityUpdateArgs>(args: SelectSubset<T, SlotAvailabilityUpdateArgs<ExtArgs>>): Prisma__SlotAvailabilityClient<$Result.GetResult<Prisma.$SlotAvailabilityPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more SlotAvailabilities.
+     * @param {SlotAvailabilityDeleteManyArgs} args - Arguments to filter SlotAvailabilities to delete.
+     * @example
+     * // Delete a few SlotAvailabilities
+     * const { count } = await prisma.slotAvailability.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends SlotAvailabilityDeleteManyArgs>(args?: SelectSubset<T, SlotAvailabilityDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more SlotAvailabilities.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {SlotAvailabilityUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many SlotAvailabilities
+     * const slotAvailability = await prisma.slotAvailability.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends SlotAvailabilityUpdateManyArgs>(args: SelectSubset<T, SlotAvailabilityUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create or update one SlotAvailability.
+     * @param {SlotAvailabilityUpsertArgs} args - Arguments to update or create a SlotAvailability.
+     * @example
+     * // Update or create a SlotAvailability
+     * const slotAvailability = await prisma.slotAvailability.upsert({
+     *   create: {
+     *     // ... data to create a SlotAvailability
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the SlotAvailability we want to update
+     *   }
+     * })
+     */
+    upsert<T extends SlotAvailabilityUpsertArgs>(args: SelectSubset<T, SlotAvailabilityUpsertArgs<ExtArgs>>): Prisma__SlotAvailabilityClient<$Result.GetResult<Prisma.$SlotAvailabilityPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of SlotAvailabilities.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {SlotAvailabilityCountArgs} args - Arguments to filter SlotAvailabilities to count.
+     * @example
+     * // Count the number of SlotAvailabilities
+     * const count = await prisma.slotAvailability.count({
+     *   where: {
+     *     // ... the filter for the SlotAvailabilities we want to count
+     *   }
+     * })
+    **/
+    count<T extends SlotAvailabilityCountArgs>(
+      args?: Subset<T, SlotAvailabilityCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], SlotAvailabilityCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a SlotAvailability.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {SlotAvailabilityAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends SlotAvailabilityAggregateArgs>(args: Subset<T, SlotAvailabilityAggregateArgs>): Prisma.PrismaPromise<GetSlotAvailabilityAggregateType<T>>
+
+    /**
+     * Group by SlotAvailability.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {SlotAvailabilityGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends SlotAvailabilityGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: SlotAvailabilityGroupByArgs['orderBy'] }
+        : { orderBy?: SlotAvailabilityGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, SlotAvailabilityGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetSlotAvailabilityGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the SlotAvailability model
+   */
+  readonly fields: SlotAvailabilityFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for SlotAvailability.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__SlotAvailabilityClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the SlotAvailability model
+   */
+  interface SlotAvailabilityFieldRefs {
+    readonly id: FieldRef<"SlotAvailability", 'Int'>
+    readonly date: FieldRef<"SlotAvailability", 'String'>
+    readonly slotTime: FieldRef<"SlotAvailability", 'String'>
+    readonly isAvailable: FieldRef<"SlotAvailability", 'Boolean'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * SlotAvailability findUnique
+   */
+  export type SlotAvailabilityFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SlotAvailability
+     */
+    select?: SlotAvailabilitySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SlotAvailability
+     */
+    omit?: SlotAvailabilityOmit<ExtArgs> | null
+    /**
+     * Filter, which SlotAvailability to fetch.
+     */
+    where: SlotAvailabilityWhereUniqueInput
+  }
+
+  /**
+   * SlotAvailability findUniqueOrThrow
+   */
+  export type SlotAvailabilityFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SlotAvailability
+     */
+    select?: SlotAvailabilitySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SlotAvailability
+     */
+    omit?: SlotAvailabilityOmit<ExtArgs> | null
+    /**
+     * Filter, which SlotAvailability to fetch.
+     */
+    where: SlotAvailabilityWhereUniqueInput
+  }
+
+  /**
+   * SlotAvailability findFirst
+   */
+  export type SlotAvailabilityFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SlotAvailability
+     */
+    select?: SlotAvailabilitySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SlotAvailability
+     */
+    omit?: SlotAvailabilityOmit<ExtArgs> | null
+    /**
+     * Filter, which SlotAvailability to fetch.
+     */
+    where?: SlotAvailabilityWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of SlotAvailabilities to fetch.
+     */
+    orderBy?: SlotAvailabilityOrderByWithRelationInput | SlotAvailabilityOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for SlotAvailabilities.
+     */
+    cursor?: SlotAvailabilityWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` SlotAvailabilities from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` SlotAvailabilities.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of SlotAvailabilities.
+     */
+    distinct?: SlotAvailabilityScalarFieldEnum | SlotAvailabilityScalarFieldEnum[]
+  }
+
+  /**
+   * SlotAvailability findFirstOrThrow
+   */
+  export type SlotAvailabilityFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SlotAvailability
+     */
+    select?: SlotAvailabilitySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SlotAvailability
+     */
+    omit?: SlotAvailabilityOmit<ExtArgs> | null
+    /**
+     * Filter, which SlotAvailability to fetch.
+     */
+    where?: SlotAvailabilityWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of SlotAvailabilities to fetch.
+     */
+    orderBy?: SlotAvailabilityOrderByWithRelationInput | SlotAvailabilityOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for SlotAvailabilities.
+     */
+    cursor?: SlotAvailabilityWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` SlotAvailabilities from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` SlotAvailabilities.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of SlotAvailabilities.
+     */
+    distinct?: SlotAvailabilityScalarFieldEnum | SlotAvailabilityScalarFieldEnum[]
+  }
+
+  /**
+   * SlotAvailability findMany
+   */
+  export type SlotAvailabilityFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SlotAvailability
+     */
+    select?: SlotAvailabilitySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SlotAvailability
+     */
+    omit?: SlotAvailabilityOmit<ExtArgs> | null
+    /**
+     * Filter, which SlotAvailabilities to fetch.
+     */
+    where?: SlotAvailabilityWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of SlotAvailabilities to fetch.
+     */
+    orderBy?: SlotAvailabilityOrderByWithRelationInput | SlotAvailabilityOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing SlotAvailabilities.
+     */
+    cursor?: SlotAvailabilityWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` SlotAvailabilities from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` SlotAvailabilities.
+     */
+    skip?: number
+    distinct?: SlotAvailabilityScalarFieldEnum | SlotAvailabilityScalarFieldEnum[]
+  }
+
+  /**
+   * SlotAvailability create
+   */
+  export type SlotAvailabilityCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SlotAvailability
+     */
+    select?: SlotAvailabilitySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SlotAvailability
+     */
+    omit?: SlotAvailabilityOmit<ExtArgs> | null
+    /**
+     * The data needed to create a SlotAvailability.
+     */
+    data: XOR<SlotAvailabilityCreateInput, SlotAvailabilityUncheckedCreateInput>
+  }
+
+  /**
+   * SlotAvailability createMany
+   */
+  export type SlotAvailabilityCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many SlotAvailabilities.
+     */
+    data: SlotAvailabilityCreateManyInput | SlotAvailabilityCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * SlotAvailability update
+   */
+  export type SlotAvailabilityUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SlotAvailability
+     */
+    select?: SlotAvailabilitySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SlotAvailability
+     */
+    omit?: SlotAvailabilityOmit<ExtArgs> | null
+    /**
+     * The data needed to update a SlotAvailability.
+     */
+    data: XOR<SlotAvailabilityUpdateInput, SlotAvailabilityUncheckedUpdateInput>
+    /**
+     * Choose, which SlotAvailability to update.
+     */
+    where: SlotAvailabilityWhereUniqueInput
+  }
+
+  /**
+   * SlotAvailability updateMany
+   */
+  export type SlotAvailabilityUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update SlotAvailabilities.
+     */
+    data: XOR<SlotAvailabilityUpdateManyMutationInput, SlotAvailabilityUncheckedUpdateManyInput>
+    /**
+     * Filter which SlotAvailabilities to update
+     */
+    where?: SlotAvailabilityWhereInput
+    /**
+     * Limit how many SlotAvailabilities to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * SlotAvailability upsert
+   */
+  export type SlotAvailabilityUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SlotAvailability
+     */
+    select?: SlotAvailabilitySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SlotAvailability
+     */
+    omit?: SlotAvailabilityOmit<ExtArgs> | null
+    /**
+     * The filter to search for the SlotAvailability to update in case it exists.
+     */
+    where: SlotAvailabilityWhereUniqueInput
+    /**
+     * In case the SlotAvailability found by the `where` argument doesn't exist, create a new SlotAvailability with this data.
+     */
+    create: XOR<SlotAvailabilityCreateInput, SlotAvailabilityUncheckedCreateInput>
+    /**
+     * In case the SlotAvailability was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<SlotAvailabilityUpdateInput, SlotAvailabilityUncheckedUpdateInput>
+  }
+
+  /**
+   * SlotAvailability delete
+   */
+  export type SlotAvailabilityDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SlotAvailability
+     */
+    select?: SlotAvailabilitySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SlotAvailability
+     */
+    omit?: SlotAvailabilityOmit<ExtArgs> | null
+    /**
+     * Filter which SlotAvailability to delete.
+     */
+    where: SlotAvailabilityWhereUniqueInput
+  }
+
+  /**
+   * SlotAvailability deleteMany
+   */
+  export type SlotAvailabilityDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which SlotAvailabilities to delete
+     */
+    where?: SlotAvailabilityWhereInput
+    /**
+     * Limit how many SlotAvailabilities to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * SlotAvailability without action
+   */
+  export type SlotAvailabilityDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the SlotAvailability
+     */
+    select?: SlotAvailabilitySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the SlotAvailability
+     */
+    omit?: SlotAvailabilityOmit<ExtArgs> | null
+  }
+
+
+  /**
    * Model VocalRecordingAppointment
    */
 
@@ -10005,10 +11004,15 @@ export namespace Prisma {
     appointment_id: number | null
     time_in: string | null
     time_out: string | null
+    appointmentType: string | null
     note: string | null
     user_id: number | null
     status: string | null
     isCancel: boolean | null
+    cancelRequested: boolean | null
+    cancelReason: string | null
+    cancelApprovedAt: Date | null
+    rejectReason: string | null
   }
 
   export type VocalRecordingAppointmentDetailMaxAggregateOutputType = {
@@ -10016,10 +11020,15 @@ export namespace Prisma {
     appointment_id: number | null
     time_in: string | null
     time_out: string | null
+    appointmentType: string | null
     note: string | null
     user_id: number | null
     status: string | null
     isCancel: boolean | null
+    cancelRequested: boolean | null
+    cancelReason: string | null
+    cancelApprovedAt: Date | null
+    rejectReason: string | null
   }
 
   export type VocalRecordingAppointmentDetailCountAggregateOutputType = {
@@ -10027,10 +11036,15 @@ export namespace Prisma {
     appointment_id: number
     time_in: number
     time_out: number
+    appointmentType: number
     note: number
     user_id: number
     status: number
     isCancel: number
+    cancelRequested: number
+    cancelReason: number
+    cancelApprovedAt: number
+    rejectReason: number
     _all: number
   }
 
@@ -10052,10 +11066,15 @@ export namespace Prisma {
     appointment_id?: true
     time_in?: true
     time_out?: true
+    appointmentType?: true
     note?: true
     user_id?: true
     status?: true
     isCancel?: true
+    cancelRequested?: true
+    cancelReason?: true
+    cancelApprovedAt?: true
+    rejectReason?: true
   }
 
   export type VocalRecordingAppointmentDetailMaxAggregateInputType = {
@@ -10063,10 +11082,15 @@ export namespace Prisma {
     appointment_id?: true
     time_in?: true
     time_out?: true
+    appointmentType?: true
     note?: true
     user_id?: true
     status?: true
     isCancel?: true
+    cancelRequested?: true
+    cancelReason?: true
+    cancelApprovedAt?: true
+    rejectReason?: true
   }
 
   export type VocalRecordingAppointmentDetailCountAggregateInputType = {
@@ -10074,10 +11098,15 @@ export namespace Prisma {
     appointment_id?: true
     time_in?: true
     time_out?: true
+    appointmentType?: true
     note?: true
     user_id?: true
     status?: true
     isCancel?: true
+    cancelRequested?: true
+    cancelReason?: true
+    cancelApprovedAt?: true
+    rejectReason?: true
     _all?: true
   }
 
@@ -10172,10 +11201,15 @@ export namespace Prisma {
     appointment_id: number
     time_in: string
     time_out: string
+    appointmentType: string
     note: string | null
     user_id: number
     status: string
     isCancel: boolean
+    cancelRequested: boolean
+    cancelReason: string | null
+    cancelApprovedAt: Date | null
+    rejectReason: string | null
     _count: VocalRecordingAppointmentDetailCountAggregateOutputType | null
     _avg: VocalRecordingAppointmentDetailAvgAggregateOutputType | null
     _sum: VocalRecordingAppointmentDetailSumAggregateOutputType | null
@@ -10202,10 +11236,15 @@ export namespace Prisma {
     appointment_id?: boolean
     time_in?: boolean
     time_out?: boolean
+    appointmentType?: boolean
     note?: boolean
     user_id?: boolean
     status?: boolean
     isCancel?: boolean
+    cancelRequested?: boolean
+    cancelReason?: boolean
+    cancelApprovedAt?: boolean
+    rejectReason?: boolean
     user?: boolean | UserDefaultArgs<ExtArgs>
     appointment?: boolean | VocalRecordingAppointmentDefaultArgs<ExtArgs>
     payments?: boolean | VocalRecordingAppointmentDetail$paymentsArgs<ExtArgs>
@@ -10219,13 +11258,18 @@ export namespace Prisma {
     appointment_id?: boolean
     time_in?: boolean
     time_out?: boolean
+    appointmentType?: boolean
     note?: boolean
     user_id?: boolean
     status?: boolean
     isCancel?: boolean
+    cancelRequested?: boolean
+    cancelReason?: boolean
+    cancelApprovedAt?: boolean
+    rejectReason?: boolean
   }
 
-  export type VocalRecordingAppointmentDetailOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "appointment_id" | "time_in" | "time_out" | "note" | "user_id" | "status" | "isCancel", ExtArgs["result"]["vocalRecordingAppointmentDetail"]>
+  export type VocalRecordingAppointmentDetailOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "appointment_id" | "time_in" | "time_out" | "appointmentType" | "note" | "user_id" | "status" | "isCancel" | "cancelRequested" | "cancelReason" | "cancelApprovedAt" | "rejectReason", ExtArgs["result"]["vocalRecordingAppointmentDetail"]>
   export type VocalRecordingAppointmentDetailInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     user?: boolean | UserDefaultArgs<ExtArgs>
     appointment?: boolean | VocalRecordingAppointmentDefaultArgs<ExtArgs>
@@ -10245,10 +11289,15 @@ export namespace Prisma {
       appointment_id: number
       time_in: string
       time_out: string
+      appointmentType: string
       note: string | null
       user_id: number
       status: string
       isCancel: boolean
+      cancelRequested: boolean
+      cancelReason: string | null
+      cancelApprovedAt: Date | null
+      rejectReason: string | null
     }, ExtArgs["result"]["vocalRecordingAppointmentDetail"]>
     composites: {}
   }
@@ -10625,10 +11674,15 @@ export namespace Prisma {
     readonly appointment_id: FieldRef<"VocalRecordingAppointmentDetail", 'Int'>
     readonly time_in: FieldRef<"VocalRecordingAppointmentDetail", 'String'>
     readonly time_out: FieldRef<"VocalRecordingAppointmentDetail", 'String'>
+    readonly appointmentType: FieldRef<"VocalRecordingAppointmentDetail", 'String'>
     readonly note: FieldRef<"VocalRecordingAppointmentDetail", 'String'>
     readonly user_id: FieldRef<"VocalRecordingAppointmentDetail", 'Int'>
     readonly status: FieldRef<"VocalRecordingAppointmentDetail", 'String'>
     readonly isCancel: FieldRef<"VocalRecordingAppointmentDetail", 'Boolean'>
+    readonly cancelRequested: FieldRef<"VocalRecordingAppointmentDetail", 'Boolean'>
+    readonly cancelReason: FieldRef<"VocalRecordingAppointmentDetail", 'String'>
+    readonly cancelApprovedAt: FieldRef<"VocalRecordingAppointmentDetail", 'DateTime'>
+    readonly rejectReason: FieldRef<"VocalRecordingAppointmentDetail", 'String'>
   }
     
 
@@ -12131,6 +13185,7 @@ export namespace Prisma {
     endDate: 'endDate',
     location: 'location',
     time: 'time',
+    eventUrl: 'eventUrl',
     note: 'note'
   };
 
@@ -12182,6 +13237,16 @@ export namespace Prisma {
   export type Class_InstallmentScalarFieldEnum = (typeof Class_InstallmentScalarFieldEnum)[keyof typeof Class_InstallmentScalarFieldEnum]
 
 
+  export const SlotAvailabilityScalarFieldEnum: {
+    id: 'id',
+    date: 'date',
+    slotTime: 'slotTime',
+    isAvailable: 'isAvailable'
+  };
+
+  export type SlotAvailabilityScalarFieldEnum = (typeof SlotAvailabilityScalarFieldEnum)[keyof typeof SlotAvailabilityScalarFieldEnum]
+
+
   export const VocalRecordingAppointmentScalarFieldEnum: {
     id: 'id',
     date: 'date',
@@ -12197,10 +13262,15 @@ export namespace Prisma {
     appointment_id: 'appointment_id',
     time_in: 'time_in',
     time_out: 'time_out',
+    appointmentType: 'appointmentType',
     note: 'note',
     user_id: 'user_id',
     status: 'status',
-    isCancel: 'isCancel'
+    isCancel: 'isCancel',
+    cancelRequested: 'cancelRequested',
+    cancelReason: 'cancelReason',
+    cancelApprovedAt: 'cancelApprovedAt',
+    rejectReason: 'rejectReason'
   };
 
   export type VocalRecordingAppointmentDetailScalarFieldEnum = (typeof VocalRecordingAppointmentDetailScalarFieldEnum)[keyof typeof VocalRecordingAppointmentDetailScalarFieldEnum]
@@ -12272,6 +13342,7 @@ export namespace Prisma {
     title: 'title',
     description: 'description',
     location: 'location',
+    eventUrl: 'eventUrl',
     note: 'note'
   };
 
@@ -12298,6 +13369,14 @@ export namespace Prisma {
   export type Class_InstallmentOrderByRelevanceFieldEnum = (typeof Class_InstallmentOrderByRelevanceFieldEnum)[keyof typeof Class_InstallmentOrderByRelevanceFieldEnum]
 
 
+  export const SlotAvailabilityOrderByRelevanceFieldEnum: {
+    date: 'date',
+    slotTime: 'slotTime'
+  };
+
+  export type SlotAvailabilityOrderByRelevanceFieldEnum = (typeof SlotAvailabilityOrderByRelevanceFieldEnum)[keyof typeof SlotAvailabilityOrderByRelevanceFieldEnum]
+
+
   export const VocalRecordingAppointmentOrderByRelevanceFieldEnum: {
     date: 'date',
     status: 'status',
@@ -12310,8 +13389,11 @@ export namespace Prisma {
   export const VocalRecordingAppointmentDetailOrderByRelevanceFieldEnum: {
     time_in: 'time_in',
     time_out: 'time_out',
+    appointmentType: 'appointmentType',
     note: 'note',
-    status: 'status'
+    status: 'status',
+    cancelReason: 'cancelReason',
+    rejectReason: 'rejectReason'
   };
 
   export type VocalRecordingAppointmentDetailOrderByRelevanceFieldEnum = (typeof VocalRecordingAppointmentDetailOrderByRelevanceFieldEnum)[keyof typeof VocalRecordingAppointmentDetailOrderByRelevanceFieldEnum]
@@ -12610,6 +13692,7 @@ export namespace Prisma {
     endDate?: DateTimeNullableFilter<"Event"> | Date | string | null
     location?: StringNullableFilter<"Event"> | string | null
     time?: DateTimeNullableFilter<"Event"> | Date | string | null
+    eventUrl?: StringNullableFilter<"Event"> | string | null
     note?: StringNullableFilter<"Event"> | string | null
   }
 
@@ -12621,6 +13704,7 @@ export namespace Prisma {
     endDate?: SortOrderInput | SortOrder
     location?: SortOrderInput | SortOrder
     time?: SortOrderInput | SortOrder
+    eventUrl?: SortOrderInput | SortOrder
     note?: SortOrderInput | SortOrder
     _relevance?: EventOrderByRelevanceInput
   }
@@ -12636,6 +13720,7 @@ export namespace Prisma {
     endDate?: DateTimeNullableFilter<"Event"> | Date | string | null
     location?: StringNullableFilter<"Event"> | string | null
     time?: DateTimeNullableFilter<"Event"> | Date | string | null
+    eventUrl?: StringNullableFilter<"Event"> | string | null
     note?: StringNullableFilter<"Event"> | string | null
   }, "id">
 
@@ -12647,6 +13732,7 @@ export namespace Prisma {
     endDate?: SortOrderInput | SortOrder
     location?: SortOrderInput | SortOrder
     time?: SortOrderInput | SortOrder
+    eventUrl?: SortOrderInput | SortOrder
     note?: SortOrderInput | SortOrder
     _count?: EventCountOrderByAggregateInput
     _avg?: EventAvgOrderByAggregateInput
@@ -12666,6 +13752,7 @@ export namespace Prisma {
     endDate?: DateTimeNullableWithAggregatesFilter<"Event"> | Date | string | null
     location?: StringNullableWithAggregatesFilter<"Event"> | string | null
     time?: DateTimeNullableWithAggregatesFilter<"Event"> | Date | string | null
+    eventUrl?: StringNullableWithAggregatesFilter<"Event"> | string | null
     note?: StringNullableWithAggregatesFilter<"Event"> | string | null
   }
 
@@ -12908,6 +13995,57 @@ export namespace Prisma {
     installments_Due_Date?: DateTimeWithAggregatesFilter<"Class_Installment"> | Date | string
   }
 
+  export type SlotAvailabilityWhereInput = {
+    AND?: SlotAvailabilityWhereInput | SlotAvailabilityWhereInput[]
+    OR?: SlotAvailabilityWhereInput[]
+    NOT?: SlotAvailabilityWhereInput | SlotAvailabilityWhereInput[]
+    id?: IntFilter<"SlotAvailability"> | number
+    date?: StringFilter<"SlotAvailability"> | string
+    slotTime?: StringFilter<"SlotAvailability"> | string
+    isAvailable?: BoolFilter<"SlotAvailability"> | boolean
+  }
+
+  export type SlotAvailabilityOrderByWithRelationInput = {
+    id?: SortOrder
+    date?: SortOrder
+    slotTime?: SortOrder
+    isAvailable?: SortOrder
+    _relevance?: SlotAvailabilityOrderByRelevanceInput
+  }
+
+  export type SlotAvailabilityWhereUniqueInput = Prisma.AtLeast<{
+    id?: number
+    date_slotTime?: SlotAvailabilityDateSlotTimeCompoundUniqueInput
+    AND?: SlotAvailabilityWhereInput | SlotAvailabilityWhereInput[]
+    OR?: SlotAvailabilityWhereInput[]
+    NOT?: SlotAvailabilityWhereInput | SlotAvailabilityWhereInput[]
+    date?: StringFilter<"SlotAvailability"> | string
+    slotTime?: StringFilter<"SlotAvailability"> | string
+    isAvailable?: BoolFilter<"SlotAvailability"> | boolean
+  }, "id" | "date_slotTime">
+
+  export type SlotAvailabilityOrderByWithAggregationInput = {
+    id?: SortOrder
+    date?: SortOrder
+    slotTime?: SortOrder
+    isAvailable?: SortOrder
+    _count?: SlotAvailabilityCountOrderByAggregateInput
+    _avg?: SlotAvailabilityAvgOrderByAggregateInput
+    _max?: SlotAvailabilityMaxOrderByAggregateInput
+    _min?: SlotAvailabilityMinOrderByAggregateInput
+    _sum?: SlotAvailabilitySumOrderByAggregateInput
+  }
+
+  export type SlotAvailabilityScalarWhereWithAggregatesInput = {
+    AND?: SlotAvailabilityScalarWhereWithAggregatesInput | SlotAvailabilityScalarWhereWithAggregatesInput[]
+    OR?: SlotAvailabilityScalarWhereWithAggregatesInput[]
+    NOT?: SlotAvailabilityScalarWhereWithAggregatesInput | SlotAvailabilityScalarWhereWithAggregatesInput[]
+    id?: IntWithAggregatesFilter<"SlotAvailability"> | number
+    date?: StringWithAggregatesFilter<"SlotAvailability"> | string
+    slotTime?: StringWithAggregatesFilter<"SlotAvailability"> | string
+    isAvailable?: BoolWithAggregatesFilter<"SlotAvailability"> | boolean
+  }
+
   export type VocalRecordingAppointmentWhereInput = {
     AND?: VocalRecordingAppointmentWhereInput | VocalRecordingAppointmentWhereInput[]
     OR?: VocalRecordingAppointmentWhereInput[]
@@ -12969,10 +14107,15 @@ export namespace Prisma {
     appointment_id?: IntFilter<"VocalRecordingAppointmentDetail"> | number
     time_in?: StringFilter<"VocalRecordingAppointmentDetail"> | string
     time_out?: StringFilter<"VocalRecordingAppointmentDetail"> | string
+    appointmentType?: StringFilter<"VocalRecordingAppointmentDetail"> | string
     note?: StringNullableFilter<"VocalRecordingAppointmentDetail"> | string | null
     user_id?: IntFilter<"VocalRecordingAppointmentDetail"> | number
     status?: StringFilter<"VocalRecordingAppointmentDetail"> | string
     isCancel?: BoolFilter<"VocalRecordingAppointmentDetail"> | boolean
+    cancelRequested?: BoolFilter<"VocalRecordingAppointmentDetail"> | boolean
+    cancelReason?: StringNullableFilter<"VocalRecordingAppointmentDetail"> | string | null
+    cancelApprovedAt?: DateTimeNullableFilter<"VocalRecordingAppointmentDetail"> | Date | string | null
+    rejectReason?: StringNullableFilter<"VocalRecordingAppointmentDetail"> | string | null
     user?: XOR<UserScalarRelationFilter, UserWhereInput>
     appointment?: XOR<VocalRecordingAppointmentScalarRelationFilter, VocalRecordingAppointmentWhereInput>
     payments?: PaymentListRelationFilter
@@ -12983,10 +14126,15 @@ export namespace Prisma {
     appointment_id?: SortOrder
     time_in?: SortOrder
     time_out?: SortOrder
+    appointmentType?: SortOrder
     note?: SortOrderInput | SortOrder
     user_id?: SortOrder
     status?: SortOrder
     isCancel?: SortOrder
+    cancelRequested?: SortOrder
+    cancelReason?: SortOrderInput | SortOrder
+    cancelApprovedAt?: SortOrderInput | SortOrder
+    rejectReason?: SortOrderInput | SortOrder
     user?: UserOrderByWithRelationInput
     appointment?: VocalRecordingAppointmentOrderByWithRelationInput
     payments?: PaymentOrderByRelationAggregateInput
@@ -13001,10 +14149,15 @@ export namespace Prisma {
     appointment_id?: IntFilter<"VocalRecordingAppointmentDetail"> | number
     time_in?: StringFilter<"VocalRecordingAppointmentDetail"> | string
     time_out?: StringFilter<"VocalRecordingAppointmentDetail"> | string
+    appointmentType?: StringFilter<"VocalRecordingAppointmentDetail"> | string
     note?: StringNullableFilter<"VocalRecordingAppointmentDetail"> | string | null
     user_id?: IntFilter<"VocalRecordingAppointmentDetail"> | number
     status?: StringFilter<"VocalRecordingAppointmentDetail"> | string
     isCancel?: BoolFilter<"VocalRecordingAppointmentDetail"> | boolean
+    cancelRequested?: BoolFilter<"VocalRecordingAppointmentDetail"> | boolean
+    cancelReason?: StringNullableFilter<"VocalRecordingAppointmentDetail"> | string | null
+    cancelApprovedAt?: DateTimeNullableFilter<"VocalRecordingAppointmentDetail"> | Date | string | null
+    rejectReason?: StringNullableFilter<"VocalRecordingAppointmentDetail"> | string | null
     user?: XOR<UserScalarRelationFilter, UserWhereInput>
     appointment?: XOR<VocalRecordingAppointmentScalarRelationFilter, VocalRecordingAppointmentWhereInput>
     payments?: PaymentListRelationFilter
@@ -13015,10 +14168,15 @@ export namespace Prisma {
     appointment_id?: SortOrder
     time_in?: SortOrder
     time_out?: SortOrder
+    appointmentType?: SortOrder
     note?: SortOrderInput | SortOrder
     user_id?: SortOrder
     status?: SortOrder
     isCancel?: SortOrder
+    cancelRequested?: SortOrder
+    cancelReason?: SortOrderInput | SortOrder
+    cancelApprovedAt?: SortOrderInput | SortOrder
+    rejectReason?: SortOrderInput | SortOrder
     _count?: VocalRecordingAppointmentDetailCountOrderByAggregateInput
     _avg?: VocalRecordingAppointmentDetailAvgOrderByAggregateInput
     _max?: VocalRecordingAppointmentDetailMaxOrderByAggregateInput
@@ -13034,10 +14192,15 @@ export namespace Prisma {
     appointment_id?: IntWithAggregatesFilter<"VocalRecordingAppointmentDetail"> | number
     time_in?: StringWithAggregatesFilter<"VocalRecordingAppointmentDetail"> | string
     time_out?: StringWithAggregatesFilter<"VocalRecordingAppointmentDetail"> | string
+    appointmentType?: StringWithAggregatesFilter<"VocalRecordingAppointmentDetail"> | string
     note?: StringNullableWithAggregatesFilter<"VocalRecordingAppointmentDetail"> | string | null
     user_id?: IntWithAggregatesFilter<"VocalRecordingAppointmentDetail"> | number
     status?: StringWithAggregatesFilter<"VocalRecordingAppointmentDetail"> | string
     isCancel?: BoolWithAggregatesFilter<"VocalRecordingAppointmentDetail"> | boolean
+    cancelRequested?: BoolWithAggregatesFilter<"VocalRecordingAppointmentDetail"> | boolean
+    cancelReason?: StringNullableWithAggregatesFilter<"VocalRecordingAppointmentDetail"> | string | null
+    cancelApprovedAt?: DateTimeNullableWithAggregatesFilter<"VocalRecordingAppointmentDetail"> | Date | string | null
+    rejectReason?: StringNullableWithAggregatesFilter<"VocalRecordingAppointmentDetail"> | string | null
   }
 
   export type PaymentWhereInput = {
@@ -13362,6 +14525,7 @@ export namespace Prisma {
     endDate?: Date | string | null
     location?: string | null
     time?: Date | string | null
+    eventUrl?: string | null
     note?: string | null
   }
 
@@ -13373,6 +14537,7 @@ export namespace Prisma {
     endDate?: Date | string | null
     location?: string | null
     time?: Date | string | null
+    eventUrl?: string | null
     note?: string | null
   }
 
@@ -13383,6 +14548,7 @@ export namespace Prisma {
     endDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     location?: NullableStringFieldUpdateOperationsInput | string | null
     time?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    eventUrl?: NullableStringFieldUpdateOperationsInput | string | null
     note?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
@@ -13394,6 +14560,7 @@ export namespace Prisma {
     endDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     location?: NullableStringFieldUpdateOperationsInput | string | null
     time?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    eventUrl?: NullableStringFieldUpdateOperationsInput | string | null
     note?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
@@ -13405,6 +14572,7 @@ export namespace Prisma {
     endDate?: Date | string | null
     location?: string | null
     time?: Date | string | null
+    eventUrl?: string | null
     note?: string | null
   }
 
@@ -13415,6 +14583,7 @@ export namespace Prisma {
     endDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     location?: NullableStringFieldUpdateOperationsInput | string | null
     time?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    eventUrl?: NullableStringFieldUpdateOperationsInput | string | null
     note?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
@@ -13426,6 +14595,7 @@ export namespace Prisma {
     endDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     location?: NullableStringFieldUpdateOperationsInput | string | null
     time?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    eventUrl?: NullableStringFieldUpdateOperationsInput | string | null
     note?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
@@ -13677,6 +14847,52 @@ export namespace Prisma {
     installments_Due_Date?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type SlotAvailabilityCreateInput = {
+    date: string
+    slotTime: string
+    isAvailable?: boolean
+  }
+
+  export type SlotAvailabilityUncheckedCreateInput = {
+    id?: number
+    date: string
+    slotTime: string
+    isAvailable?: boolean
+  }
+
+  export type SlotAvailabilityUpdateInput = {
+    date?: StringFieldUpdateOperationsInput | string
+    slotTime?: StringFieldUpdateOperationsInput | string
+    isAvailable?: BoolFieldUpdateOperationsInput | boolean
+  }
+
+  export type SlotAvailabilityUncheckedUpdateInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    date?: StringFieldUpdateOperationsInput | string
+    slotTime?: StringFieldUpdateOperationsInput | string
+    isAvailable?: BoolFieldUpdateOperationsInput | boolean
+  }
+
+  export type SlotAvailabilityCreateManyInput = {
+    id?: number
+    date: string
+    slotTime: string
+    isAvailable?: boolean
+  }
+
+  export type SlotAvailabilityUpdateManyMutationInput = {
+    date?: StringFieldUpdateOperationsInput | string
+    slotTime?: StringFieldUpdateOperationsInput | string
+    isAvailable?: BoolFieldUpdateOperationsInput | boolean
+  }
+
+  export type SlotAvailabilityUncheckedUpdateManyInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    date?: StringFieldUpdateOperationsInput | string
+    slotTime?: StringFieldUpdateOperationsInput | string
+    isAvailable?: BoolFieldUpdateOperationsInput | boolean
+  }
+
   export type VocalRecordingAppointmentCreateInput = {
     date: string
     status: string
@@ -13730,9 +14946,14 @@ export namespace Prisma {
   export type VocalRecordingAppointmentDetailCreateInput = {
     time_in: string
     time_out: string
+    appointmentType?: string
     note?: string | null
     status?: string
     isCancel?: boolean
+    cancelRequested?: boolean
+    cancelReason?: string | null
+    cancelApprovedAt?: Date | string | null
+    rejectReason?: string | null
     user: UserCreateNestedOneWithoutAppointmentsInput
     appointment: VocalRecordingAppointmentCreateNestedOneWithoutDetailsInput
     payments?: PaymentCreateNestedManyWithoutAppointmentInput
@@ -13743,19 +14964,29 @@ export namespace Prisma {
     appointment_id: number
     time_in: string
     time_out: string
+    appointmentType?: string
     note?: string | null
     user_id: number
     status?: string
     isCancel?: boolean
+    cancelRequested?: boolean
+    cancelReason?: string | null
+    cancelApprovedAt?: Date | string | null
+    rejectReason?: string | null
     payments?: PaymentUncheckedCreateNestedManyWithoutAppointmentInput
   }
 
   export type VocalRecordingAppointmentDetailUpdateInput = {
     time_in?: StringFieldUpdateOperationsInput | string
     time_out?: StringFieldUpdateOperationsInput | string
+    appointmentType?: StringFieldUpdateOperationsInput | string
     note?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
     isCancel?: BoolFieldUpdateOperationsInput | boolean
+    cancelRequested?: BoolFieldUpdateOperationsInput | boolean
+    cancelReason?: NullableStringFieldUpdateOperationsInput | string | null
+    cancelApprovedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    rejectReason?: NullableStringFieldUpdateOperationsInput | string | null
     user?: UserUpdateOneRequiredWithoutAppointmentsNestedInput
     appointment?: VocalRecordingAppointmentUpdateOneRequiredWithoutDetailsNestedInput
     payments?: PaymentUpdateManyWithoutAppointmentNestedInput
@@ -13766,10 +14997,15 @@ export namespace Prisma {
     appointment_id?: IntFieldUpdateOperationsInput | number
     time_in?: StringFieldUpdateOperationsInput | string
     time_out?: StringFieldUpdateOperationsInput | string
+    appointmentType?: StringFieldUpdateOperationsInput | string
     note?: NullableStringFieldUpdateOperationsInput | string | null
     user_id?: IntFieldUpdateOperationsInput | number
     status?: StringFieldUpdateOperationsInput | string
     isCancel?: BoolFieldUpdateOperationsInput | boolean
+    cancelRequested?: BoolFieldUpdateOperationsInput | boolean
+    cancelReason?: NullableStringFieldUpdateOperationsInput | string | null
+    cancelApprovedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    rejectReason?: NullableStringFieldUpdateOperationsInput | string | null
     payments?: PaymentUncheckedUpdateManyWithoutAppointmentNestedInput
   }
 
@@ -13778,18 +15014,28 @@ export namespace Prisma {
     appointment_id: number
     time_in: string
     time_out: string
+    appointmentType?: string
     note?: string | null
     user_id: number
     status?: string
     isCancel?: boolean
+    cancelRequested?: boolean
+    cancelReason?: string | null
+    cancelApprovedAt?: Date | string | null
+    rejectReason?: string | null
   }
 
   export type VocalRecordingAppointmentDetailUpdateManyMutationInput = {
     time_in?: StringFieldUpdateOperationsInput | string
     time_out?: StringFieldUpdateOperationsInput | string
+    appointmentType?: StringFieldUpdateOperationsInput | string
     note?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
     isCancel?: BoolFieldUpdateOperationsInput | boolean
+    cancelRequested?: BoolFieldUpdateOperationsInput | boolean
+    cancelReason?: NullableStringFieldUpdateOperationsInput | string | null
+    cancelApprovedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    rejectReason?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type VocalRecordingAppointmentDetailUncheckedUpdateManyInput = {
@@ -13797,10 +15043,15 @@ export namespace Prisma {
     appointment_id?: IntFieldUpdateOperationsInput | number
     time_in?: StringFieldUpdateOperationsInput | string
     time_out?: StringFieldUpdateOperationsInput | string
+    appointmentType?: StringFieldUpdateOperationsInput | string
     note?: NullableStringFieldUpdateOperationsInput | string | null
     user_id?: IntFieldUpdateOperationsInput | number
     status?: StringFieldUpdateOperationsInput | string
     isCancel?: BoolFieldUpdateOperationsInput | boolean
+    cancelRequested?: BoolFieldUpdateOperationsInput | boolean
+    cancelReason?: NullableStringFieldUpdateOperationsInput | string | null
+    cancelApprovedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    rejectReason?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type PaymentCreateInput = {
@@ -14274,6 +15525,7 @@ export namespace Prisma {
     endDate?: SortOrder
     location?: SortOrder
     time?: SortOrder
+    eventUrl?: SortOrder
     note?: SortOrder
   }
 
@@ -14289,6 +15541,7 @@ export namespace Prisma {
     endDate?: SortOrder
     location?: SortOrder
     time?: SortOrder
+    eventUrl?: SortOrder
     note?: SortOrder
   }
 
@@ -14300,6 +15553,7 @@ export namespace Prisma {
     endDate?: SortOrder
     location?: SortOrder
     time?: SortOrder
+    eventUrl?: SortOrder
     note?: SortOrder
   }
 
@@ -14512,6 +15766,46 @@ export namespace Prisma {
     amount?: SortOrder
   }
 
+  export type SlotAvailabilityOrderByRelevanceInput = {
+    fields: SlotAvailabilityOrderByRelevanceFieldEnum | SlotAvailabilityOrderByRelevanceFieldEnum[]
+    sort: SortOrder
+    search: string
+  }
+
+  export type SlotAvailabilityDateSlotTimeCompoundUniqueInput = {
+    date: string
+    slotTime: string
+  }
+
+  export type SlotAvailabilityCountOrderByAggregateInput = {
+    id?: SortOrder
+    date?: SortOrder
+    slotTime?: SortOrder
+    isAvailable?: SortOrder
+  }
+
+  export type SlotAvailabilityAvgOrderByAggregateInput = {
+    id?: SortOrder
+  }
+
+  export type SlotAvailabilityMaxOrderByAggregateInput = {
+    id?: SortOrder
+    date?: SortOrder
+    slotTime?: SortOrder
+    isAvailable?: SortOrder
+  }
+
+  export type SlotAvailabilityMinOrderByAggregateInput = {
+    id?: SortOrder
+    date?: SortOrder
+    slotTime?: SortOrder
+    isAvailable?: SortOrder
+  }
+
+  export type SlotAvailabilitySumOrderByAggregateInput = {
+    id?: SortOrder
+  }
+
   export type VocalRecordingAppointmentOrderByRelevanceInput = {
     fields: VocalRecordingAppointmentOrderByRelevanceFieldEnum | VocalRecordingAppointmentOrderByRelevanceFieldEnum[]
     sort: SortOrder
@@ -14563,10 +15857,15 @@ export namespace Prisma {
     appointment_id?: SortOrder
     time_in?: SortOrder
     time_out?: SortOrder
+    appointmentType?: SortOrder
     note?: SortOrder
     user_id?: SortOrder
     status?: SortOrder
     isCancel?: SortOrder
+    cancelRequested?: SortOrder
+    cancelReason?: SortOrder
+    cancelApprovedAt?: SortOrder
+    rejectReason?: SortOrder
   }
 
   export type VocalRecordingAppointmentDetailAvgOrderByAggregateInput = {
@@ -14580,10 +15879,15 @@ export namespace Prisma {
     appointment_id?: SortOrder
     time_in?: SortOrder
     time_out?: SortOrder
+    appointmentType?: SortOrder
     note?: SortOrder
     user_id?: SortOrder
     status?: SortOrder
     isCancel?: SortOrder
+    cancelRequested?: SortOrder
+    cancelReason?: SortOrder
+    cancelApprovedAt?: SortOrder
+    rejectReason?: SortOrder
   }
 
   export type VocalRecordingAppointmentDetailMinOrderByAggregateInput = {
@@ -14591,10 +15895,15 @@ export namespace Prisma {
     appointment_id?: SortOrder
     time_in?: SortOrder
     time_out?: SortOrder
+    appointmentType?: SortOrder
     note?: SortOrder
     user_id?: SortOrder
     status?: SortOrder
     isCancel?: SortOrder
+    cancelRequested?: SortOrder
+    cancelReason?: SortOrder
+    cancelApprovedAt?: SortOrder
+    rejectReason?: SortOrder
   }
 
   export type VocalRecordingAppointmentDetailSumOrderByAggregateInput = {
@@ -15498,9 +16807,14 @@ export namespace Prisma {
   export type VocalRecordingAppointmentDetailCreateWithoutUserInput = {
     time_in: string
     time_out: string
+    appointmentType?: string
     note?: string | null
     status?: string
     isCancel?: boolean
+    cancelRequested?: boolean
+    cancelReason?: string | null
+    cancelApprovedAt?: Date | string | null
+    rejectReason?: string | null
     appointment: VocalRecordingAppointmentCreateNestedOneWithoutDetailsInput
     payments?: PaymentCreateNestedManyWithoutAppointmentInput
   }
@@ -15510,9 +16824,14 @@ export namespace Prisma {
     appointment_id: number
     time_in: string
     time_out: string
+    appointmentType?: string
     note?: string | null
     status?: string
     isCancel?: boolean
+    cancelRequested?: boolean
+    cancelReason?: string | null
+    cancelApprovedAt?: Date | string | null
+    rejectReason?: string | null
     payments?: PaymentUncheckedCreateNestedManyWithoutAppointmentInput
   }
 
@@ -15662,10 +16981,15 @@ export namespace Prisma {
     appointment_id?: IntFilter<"VocalRecordingAppointmentDetail"> | number
     time_in?: StringFilter<"VocalRecordingAppointmentDetail"> | string
     time_out?: StringFilter<"VocalRecordingAppointmentDetail"> | string
+    appointmentType?: StringFilter<"VocalRecordingAppointmentDetail"> | string
     note?: StringNullableFilter<"VocalRecordingAppointmentDetail"> | string | null
     user_id?: IntFilter<"VocalRecordingAppointmentDetail"> | number
     status?: StringFilter<"VocalRecordingAppointmentDetail"> | string
     isCancel?: BoolFilter<"VocalRecordingAppointmentDetail"> | boolean
+    cancelRequested?: BoolFilter<"VocalRecordingAppointmentDetail"> | boolean
+    cancelReason?: StringNullableFilter<"VocalRecordingAppointmentDetail"> | string | null
+    cancelApprovedAt?: DateTimeNullableFilter<"VocalRecordingAppointmentDetail"> | Date | string | null
+    rejectReason?: StringNullableFilter<"VocalRecordingAppointmentDetail"> | string | null
   }
 
   export type Class_StudentUpsertWithWhereUniqueWithoutStudentInput = {
@@ -16223,9 +17547,14 @@ export namespace Prisma {
   export type VocalRecordingAppointmentDetailCreateWithoutAppointmentInput = {
     time_in: string
     time_out: string
+    appointmentType?: string
     note?: string | null
     status?: string
     isCancel?: boolean
+    cancelRequested?: boolean
+    cancelReason?: string | null
+    cancelApprovedAt?: Date | string | null
+    rejectReason?: string | null
     user: UserCreateNestedOneWithoutAppointmentsInput
     payments?: PaymentCreateNestedManyWithoutAppointmentInput
   }
@@ -16234,10 +17563,15 @@ export namespace Prisma {
     id?: number
     time_in: string
     time_out: string
+    appointmentType?: string
     note?: string | null
     user_id: number
     status?: string
     isCancel?: boolean
+    cancelRequested?: boolean
+    cancelReason?: string | null
+    cancelApprovedAt?: Date | string | null
+    rejectReason?: string | null
     payments?: PaymentUncheckedCreateNestedManyWithoutAppointmentInput
   }
 
@@ -16497,9 +17831,14 @@ export namespace Prisma {
   export type VocalRecordingAppointmentDetailCreateWithoutPaymentsInput = {
     time_in: string
     time_out: string
+    appointmentType?: string
     note?: string | null
     status?: string
     isCancel?: boolean
+    cancelRequested?: boolean
+    cancelReason?: string | null
+    cancelApprovedAt?: Date | string | null
+    rejectReason?: string | null
     user: UserCreateNestedOneWithoutAppointmentsInput
     appointment: VocalRecordingAppointmentCreateNestedOneWithoutDetailsInput
   }
@@ -16509,10 +17848,15 @@ export namespace Prisma {
     appointment_id: number
     time_in: string
     time_out: string
+    appointmentType?: string
     note?: string | null
     user_id: number
     status?: string
     isCancel?: boolean
+    cancelRequested?: boolean
+    cancelReason?: string | null
+    cancelApprovedAt?: Date | string | null
+    rejectReason?: string | null
   }
 
   export type VocalRecordingAppointmentDetailCreateOrConnectWithoutPaymentsInput = {
@@ -16582,9 +17926,14 @@ export namespace Prisma {
   export type VocalRecordingAppointmentDetailUpdateWithoutPaymentsInput = {
     time_in?: StringFieldUpdateOperationsInput | string
     time_out?: StringFieldUpdateOperationsInput | string
+    appointmentType?: StringFieldUpdateOperationsInput | string
     note?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
     isCancel?: BoolFieldUpdateOperationsInput | boolean
+    cancelRequested?: BoolFieldUpdateOperationsInput | boolean
+    cancelReason?: NullableStringFieldUpdateOperationsInput | string | null
+    cancelApprovedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    rejectReason?: NullableStringFieldUpdateOperationsInput | string | null
     user?: UserUpdateOneRequiredWithoutAppointmentsNestedInput
     appointment?: VocalRecordingAppointmentUpdateOneRequiredWithoutDetailsNestedInput
   }
@@ -16594,10 +17943,15 @@ export namespace Prisma {
     appointment_id?: IntFieldUpdateOperationsInput | number
     time_in?: StringFieldUpdateOperationsInput | string
     time_out?: StringFieldUpdateOperationsInput | string
+    appointmentType?: StringFieldUpdateOperationsInput | string
     note?: NullableStringFieldUpdateOperationsInput | string | null
     user_id?: IntFieldUpdateOperationsInput | number
     status?: StringFieldUpdateOperationsInput | string
     isCancel?: BoolFieldUpdateOperationsInput | boolean
+    cancelRequested?: BoolFieldUpdateOperationsInput | boolean
+    cancelReason?: NullableStringFieldUpdateOperationsInput | string | null
+    cancelApprovedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    rejectReason?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type AttendanceCreateManyUserInput = {
@@ -16613,9 +17967,14 @@ export namespace Prisma {
     appointment_id: number
     time_in: string
     time_out: string
+    appointmentType?: string
     note?: string | null
     status?: string
     isCancel?: boolean
+    cancelRequested?: boolean
+    cancelReason?: string | null
+    cancelApprovedAt?: Date | string | null
+    rejectReason?: string | null
   }
 
   export type Class_StudentCreateManyStudentInput = {
@@ -16666,9 +18025,14 @@ export namespace Prisma {
   export type VocalRecordingAppointmentDetailUpdateWithoutUserInput = {
     time_in?: StringFieldUpdateOperationsInput | string
     time_out?: StringFieldUpdateOperationsInput | string
+    appointmentType?: StringFieldUpdateOperationsInput | string
     note?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
     isCancel?: BoolFieldUpdateOperationsInput | boolean
+    cancelRequested?: BoolFieldUpdateOperationsInput | boolean
+    cancelReason?: NullableStringFieldUpdateOperationsInput | string | null
+    cancelApprovedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    rejectReason?: NullableStringFieldUpdateOperationsInput | string | null
     appointment?: VocalRecordingAppointmentUpdateOneRequiredWithoutDetailsNestedInput
     payments?: PaymentUpdateManyWithoutAppointmentNestedInput
   }
@@ -16678,9 +18042,14 @@ export namespace Prisma {
     appointment_id?: IntFieldUpdateOperationsInput | number
     time_in?: StringFieldUpdateOperationsInput | string
     time_out?: StringFieldUpdateOperationsInput | string
+    appointmentType?: StringFieldUpdateOperationsInput | string
     note?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
     isCancel?: BoolFieldUpdateOperationsInput | boolean
+    cancelRequested?: BoolFieldUpdateOperationsInput | boolean
+    cancelReason?: NullableStringFieldUpdateOperationsInput | string | null
+    cancelApprovedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    rejectReason?: NullableStringFieldUpdateOperationsInput | string | null
     payments?: PaymentUncheckedUpdateManyWithoutAppointmentNestedInput
   }
 
@@ -16689,9 +18058,14 @@ export namespace Prisma {
     appointment_id?: IntFieldUpdateOperationsInput | number
     time_in?: StringFieldUpdateOperationsInput | string
     time_out?: StringFieldUpdateOperationsInput | string
+    appointmentType?: StringFieldUpdateOperationsInput | string
     note?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
     isCancel?: BoolFieldUpdateOperationsInput | boolean
+    cancelRequested?: BoolFieldUpdateOperationsInput | boolean
+    cancelReason?: NullableStringFieldUpdateOperationsInput | string | null
+    cancelApprovedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    rejectReason?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type Class_StudentUpdateWithoutStudentInput = {
@@ -16911,18 +18285,28 @@ export namespace Prisma {
     id?: number
     time_in: string
     time_out: string
+    appointmentType?: string
     note?: string | null
     user_id: number
     status?: string
     isCancel?: boolean
+    cancelRequested?: boolean
+    cancelReason?: string | null
+    cancelApprovedAt?: Date | string | null
+    rejectReason?: string | null
   }
 
   export type VocalRecordingAppointmentDetailUpdateWithoutAppointmentInput = {
     time_in?: StringFieldUpdateOperationsInput | string
     time_out?: StringFieldUpdateOperationsInput | string
+    appointmentType?: StringFieldUpdateOperationsInput | string
     note?: NullableStringFieldUpdateOperationsInput | string | null
     status?: StringFieldUpdateOperationsInput | string
     isCancel?: BoolFieldUpdateOperationsInput | boolean
+    cancelRequested?: BoolFieldUpdateOperationsInput | boolean
+    cancelReason?: NullableStringFieldUpdateOperationsInput | string | null
+    cancelApprovedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    rejectReason?: NullableStringFieldUpdateOperationsInput | string | null
     user?: UserUpdateOneRequiredWithoutAppointmentsNestedInput
     payments?: PaymentUpdateManyWithoutAppointmentNestedInput
   }
@@ -16931,10 +18315,15 @@ export namespace Prisma {
     id?: IntFieldUpdateOperationsInput | number
     time_in?: StringFieldUpdateOperationsInput | string
     time_out?: StringFieldUpdateOperationsInput | string
+    appointmentType?: StringFieldUpdateOperationsInput | string
     note?: NullableStringFieldUpdateOperationsInput | string | null
     user_id?: IntFieldUpdateOperationsInput | number
     status?: StringFieldUpdateOperationsInput | string
     isCancel?: BoolFieldUpdateOperationsInput | boolean
+    cancelRequested?: BoolFieldUpdateOperationsInput | boolean
+    cancelReason?: NullableStringFieldUpdateOperationsInput | string | null
+    cancelApprovedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    rejectReason?: NullableStringFieldUpdateOperationsInput | string | null
     payments?: PaymentUncheckedUpdateManyWithoutAppointmentNestedInput
   }
 
@@ -16942,10 +18331,15 @@ export namespace Prisma {
     id?: IntFieldUpdateOperationsInput | number
     time_in?: StringFieldUpdateOperationsInput | string
     time_out?: StringFieldUpdateOperationsInput | string
+    appointmentType?: StringFieldUpdateOperationsInput | string
     note?: NullableStringFieldUpdateOperationsInput | string | null
     user_id?: IntFieldUpdateOperationsInput | number
     status?: StringFieldUpdateOperationsInput | string
     isCancel?: BoolFieldUpdateOperationsInput | boolean
+    cancelRequested?: BoolFieldUpdateOperationsInput | boolean
+    cancelReason?: NullableStringFieldUpdateOperationsInput | string | null
+    cancelApprovedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    rejectReason?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type PaymentCreateManyAppointmentInput = {

@@ -12,14 +12,14 @@ const getAttendanceByDate=async(date:string)=>{
     })
     return attendance
 }
-const createAttendance=async(date:string,user_id:number)=>{
+const createAttendance=async(date:string,user_id:number, note?:string)=>{
     const attendance=await prisma.attendance.create({
         data:{
             date:new Date(date),
             user_id:user_id,
             time_in:new Date(),
             time_out:null,
-            note:""
+            note: note || `Time In - ${new Date().toISOString().slice(0, 16).replace("T", " ")}`
         }
     })
     return attendance

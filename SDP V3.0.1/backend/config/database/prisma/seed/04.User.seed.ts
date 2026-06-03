@@ -35,7 +35,7 @@ const users = [
 ]
 
 
-const seed = async () => {
+const seed = async (): Promise<void> => {
     try {
         for(const user of users){
             // find user type
@@ -84,4 +84,5 @@ const seed = async () => {
         console.error("Error seeding users", error)
     }
 }
-seed();
+
+export default seed;

@@ -160,11 +160,9 @@ export const getStudentInRegisteredMonths = async (months: string[]) => {
     const endDate = new Date(year, monthIndex + 1, 0, 23, 59, 59); // last day of that month
 
     return {
-      student: {
-        createdAt: {
-          gte: startDate,
-          lte: endDate
-        }
+      createdAt: {
+        gte: startDate,
+        lte: endDate
       }
     };
   });
@@ -177,9 +175,13 @@ export const getStudentInRegisteredMonths = async (months: string[]) => {
       class: true,
       student: true,
       class_installments: true
+    },
+    orderBy: {
+      createdAt: 'desc'
     }
   });
 
+  console.log(`Found ${students.length} students for months:`, months);
   return students;
 };
 

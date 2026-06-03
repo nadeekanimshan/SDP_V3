@@ -1,3 +1,4 @@
+import 'dotenv/config';
 import express, { Request, Response } from 'express';
 import EventRouters from './routers/EventRouters';
 import ClassRouters from './routers/ClassRouters';
@@ -8,6 +9,7 @@ import AuthRouter from './routers/AuthRouter';
 import AttendanceRouter from './routers/AttendanceRouter';
 import UserRouter from './routers/UserRouter';
 import RevenueRouter from './routers/RevenueRouter';
+import SlotAvailabilityRouter from './routers/SlotAvailabilityRouter';
 import { authenticate } from './middlewares/auth.middleware';
 
 const app = express();
@@ -25,6 +27,7 @@ app.use("/api/auth", AuthRouter);
 app.use("/api/attendance", AttendanceRouter);
 app.use("/api/users", UserRouter);
 app.use("/api/admin/revenue", RevenueRouter);
+app.use("/api/slots", SlotAvailabilityRouter);
 
 // Error middleware
 app.use(ErrorMiddlewares);

@@ -50,6 +50,7 @@ const createEvent = async (data: Partial<Event>): Promise<Event> => {
       endDate: data.endDate ? new Date(data.endDate) : null,
       location: data.location,
       time: data.time ? new Date(data.time) : null,
+      eventUrl: data.eventUrl,
       note: data.note,
     },
   });
@@ -76,6 +77,7 @@ const updateEvent = async (
       endDate: data.endDate ? new Date(data.endDate) : undefined,
       location: data.location,
       time: data.time ? new Date(data.time) : undefined,
+      eventUrl: data.eventUrl,
       note: data.note,
     },
   });

@@ -1,6 +1,7 @@
-import ClassDetails from "./ClassDetails"; // Confirm this is the correct component
+import ClassDetails from "./ClassDetails";
 import { useEffect, useState } from "react";
 import { UseAxios } from "../hook/useAxios";
+import { SYSTEM_KEY } from "../config/Constent";
 
 export interface ClassInstallment {
   id: number;
@@ -62,12 +63,15 @@ export default function MyClassDetails() {
   const [classes, setClasses] = useState<ClassStudentRegistration[]>([]);
 
   useEffect(() => {
+    const userId = localStorage.getItem(SYSTEM_KEY.ID);
+    if (!userId) return;
+
     const getClasses = async () => {
       setLoading(true);
       try {
-        const response = await UseAxios("classes/user/2", "GET");
-        setClasses(response.data);
-        console.log("Loaded classes:", response.data);
+        const response = await UseAxios(`classes/user/${userId}`, "GET");
+        const data = response?.data ?? response;
+        setClasses(Array.isArray(data) ? data : []);
         setError(null);
       } catch (error) {
         setError(error as Error);
@@ -80,20 +84,29 @@ export default function MyClassDetails() {
   }, []);
 
   return (
-    <div className="h-auto w-full p-4 flex flex-col gap-4 shadow-lg rounded-md bg-gray-800 text-white">
-      <h1 className="text-2xl font-bold">My Classes</h1>
-      <p>View your class details and manage your class schedule.</p>
+    <div className="w-full overflow-hidden rounded-3xl border border-slate-700/50 bg-slate-800/60 shadow-2xl shadow-black/20 backdrop-blur-xl">
+      <div className="px-6 py-5 border-b border-slate-700/50 bg-gradient-to-r from-amber-500/10 via-transparent to-amber-500/10">
+        <h1 className="text-2xl font-bold text-white">My Classes</h1>
+        <p className="text-slate-400 mt-1">View your class details and manage your schedule.</p>
+      </div>
+      <div className="p-6 flex flex-col gap-6">
+        {loading && (
+          <div className="flex justify-center py-12">
+            <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-amber-500"></div>
+          </div>
+        )}
+        {error && (
+          <p className="text-rose-400 py-4">Error loading classes: {error.message}</p>
+        )}
 
-      {loading && <p>Loading...</p>}
-      {error && (
-        <p className="text-red-500">Error loading classes: {error.message}</p>
-      )}
+        {classes.length === 0 && !loading && (
+          <div className="rounded-2xl border border-dashed border-slate-600/50 bg-slate-700/20 p-8 text-center">
+            <p className="text-slate-400 font-medium">No class registrations yet</p>
+            <p className="text-slate-500 text-sm mt-1">Enroll in a class below to get started</p>
+          </div>
+        )}
 
-      {classes.length === 0 && !loading && (
-        <p className="text-gray-400">No class registrations found.</p>
-      )}
-
-      {classes?.map((c) => (
+        {classes?.map((c) => (
         <ClassDetails
           key={c.id}
           class={
@@ -121,6 +134,7 @@ export default function MyClassDetails() {
           }))}
         />
       ))}
+      </div>
     </div>
   );
 }

@@ -19,57 +19,89 @@ const DownloadMonthReport = ({ handleDownload }: { handleDownload: (selectedMont
   };
 
   const handleDownloadReport = () => {
-    setSelectedMonths([]);
-    setShowDropdown(false);
+    if (selectedMonths.length === 0) {
+      alert("Please select at least one month");
+      return;
+    }
     console.log("Downloading for:", selectedMonths);
     handleDownload(selectedMonths);
+    setSelectedMonths([]);
+    setShowDropdown(false);
   };
 
   return (
-    <div className="relative inline-block text-left">
-      <div className="flex flex-col gap-2">
+    <div className="relative inline-block text-left w-full max-w-md">
+      <div className="bg-slate-800 border border-slate-700 rounded-2xl p-6 shadow-xl">
+        <div className="flex items-center gap-3 mb-4">
+          <FaDownload className="text-emerald-500 text-2xl" />
+          <h3 className="text-xl font-bold text-white">Student Report</h3>
+        </div>
+
+        {/* Info text */}
+        <p className="text-slate-400 text-sm mb-4">
+          Select one or more months to generate attendance report
+        </p>
+
         {/* Dropdown toggle button */}
         <button
           onClick={() => setShowDropdown(!showDropdown)}
-          className="bg-purple-600 px-4 py-2 rounded hover:bg-purple-700 text-white text-xl flex items-center gap-2"
+          className="w-full bg-emerald-600 px-4 py-3 rounded-lg hover:bg-emerald-700 text-white font-medium flex items-center justify-center gap-2 transition-colors"
         >
-          Select Month(s)
+          Select Month(s) & Download
         </button>
 
-        {/* Dropdown content */}
-        {showDropdown && (
-          <div className="absolute mt-2 bg-gray-800 border border-gray-600 rounded shadow-lg z-50 p-4 max-h-64 overflow-y-auto w-60">
-            {/* Month checkboxes */}
-            {monthsList.map((month) => (
-              <label key={month} className="flex items-center gap-2 text-white mb-1">
-                <input
-                  type="checkbox"
-                  checked={selectedMonths.includes(month)}
-                  onChange={() => handleMonthChange(month)}
-                />
-                {month}
-              </label>
-            ))}
-
-            {/* Close button */}
-            <button
-              onClick={() => setShowDropdown(false)}
-              className="mt-3 bg-red-600 px-3 py-1 rounded text-white hover:bg-red-700 w-full"
-            >
-              Close
-            </button>
+        {/* Selected months display */}
+        {selectedMonths.length > 0 && (
+          <div className="mt-3 p-3 bg-slate-700/50 rounded-lg">
+            <p className="text-xs text-slate-400 mb-2">Selected:</p>
+            <div className="flex flex-wrap gap-2">
+              {selectedMonths.map(month => (
+                <span key={month} className="bg-emerald-500/20 text-emerald-300 px-2 py-1 rounded text-sm">
+                  {month}
+                </span>
+              ))}
+            </div>
           </div>
         )}
 
-        {/* Download button */}
-        <button
-          onClick={handleDownloadReport}
-          disabled={selectedMonths.length === 0}
-          className="bg-green-600 px-4 py-2 rounded hover:bg-green-700 text-white flex items-center gap-2 disabled:opacity-50"
-        >
-          <FaDownload />
-          Download Report for Selected Months
-        </button>
+        {/* Dropdown content with maximum z-index */}
+        {showDropdown && (
+          <div className="absolute left-0 right-0 mt-2 bg-slate-800 border border-slate-700 rounded-xl shadow-2xl z-[9999] p-4 max-h-80 overflow-y-auto">
+            <p className="text-white font-medium mb-3">Select Months:</p>
+            
+            {/* Month checkboxes in grid */}
+            <div className="grid grid-cols-2 gap-2">
+              {monthsList.map((month) => (
+                <label key={month} className="flex items-center gap-2 text-white p-2 hover:bg-slate-700/50 rounded cursor-pointer transition-colors">
+                  <input
+                    type="checkbox"
+                    checked={selectedMonths.includes(month)}
+                    onChange={() => handleMonthChange(month)}
+                    className="w-4 h-4 accent-emerald-500"
+                  />
+                  <span className="text-sm">{month}</span>
+                </label>
+              ))}
+            </div>
+
+            {/* Action buttons */}
+            <div className="flex gap-2 mt-4 pt-3 border-t border-slate-700">
+              <button
+                onClick={() => setShowDropdown(false)}
+                className="flex-1 bg-slate-600 px-3 py-2 rounded-lg text-white hover:bg-slate-500 transition-colors"
+              >
+                Close
+              </button>
+              <button
+                onClick={handleDownloadReport}
+                disabled={selectedMonths.length === 0}
+                className="flex-1 bg-emerald-600 px-3 py-2 rounded-lg text-white hover:bg-emerald-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium"
+              >
+                Download ({selectedMonths.length})
+              </button>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

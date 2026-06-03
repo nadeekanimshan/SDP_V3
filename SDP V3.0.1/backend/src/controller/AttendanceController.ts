@@ -33,7 +33,8 @@ const createAttendance=async(req:Request,res:Response,next:NextFunction)=>{
             res.status(409).json({message:"User is already present"});
             return;
         }
-        const attendance=await AttendanceService.createAttendance(date,user_id);
+        const note = req.body.note || `Time In - ${new Date().toISOString().slice(0, 16).replace("T", " ")}`;
+        const attendance=await AttendanceService.createAttendance(date,user_id, note);
         if(!attendance){
             res.status(404).json([]);
             return;

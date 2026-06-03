@@ -31,6 +31,20 @@ const register=async(req:Request,res:Response,next:NextFunction)=>{
     }
 }
 
+const refreshToken=async(req:Request,res:Response,next:NextFunction)=>{
+    try {
+        const {refresh_token}=req.body
+        if(!refresh_token){
+            res.status(400).json({message:"Refresh token is required"})
+            return;
+        }
+        const result=await AuthService.refreshToken(refresh_token)
+        res.status(200).json(result)
+    } catch (error) {
+        next(error)
+    }
+}
+
 const getType=async(req:Request,res:Response,next:NextFunction)=>{
     try {
         const type=req.query.type as string
@@ -45,12 +59,32 @@ const getType=async(req:Request,res:Response,next:NextFunction)=>{
     }
 }
 
-
+const updateProfile=async(req:Request,res:Response,next:NextFunction)=>{
+    try {
+        const userId=req.user?.userId
+        if(!userId){
+            res.status(401).json({message:"Unauthorized"})
+            return;
+        }
+        const {first_name,last_name,current_password,new_password}=req.body
+        const result=await AuthService.updateProfile(Number(userId),{
+            first_name,
+            last_name,
+            current_password,
+            new_password
+        })
+        res.status(200).json(result)
+    } catch (error) {
+        next(error)
+    }
+}
 
 const AuthController={
     login,
     register,
-    getType
+    refreshToken,
+    getType,
+    updateProfile
 }
 
 export default AuthController

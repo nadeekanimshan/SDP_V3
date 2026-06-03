@@ -63,6 +63,7 @@ model Event {
   endDate      DateTime?
   location     String?
   time         DateTime?
+  eventUrl     String?   @map("event_url")
   note         String?
 
   @@map("event")
@@ -119,6 +120,16 @@ model Class_Installment {
     @@map("class_installment")
 }
 
+model SlotAvailability {
+    id           Int       @id @default(autoincrement())
+    date         String    @db.VarChar(10)       // yyyy-MM-dd
+    slotTime     String    @map("slot_time")     // e.g. "08.00", "08.30" (30-min slots)
+    isAvailable  Boolean   @default(true) @map("is_available")
+
+    @@unique([date, slotTime])
+    @@map("slot_availability")
+}
+
 model VocalRecordingAppointment {
     id           Int       @id @default(autoincrement())
     date       String
@@ -134,10 +145,15 @@ model VocalRecordingAppointmentDetail {
     appointment_id     Int      @map("appointment_id")
     time_in     String
     time_out    String
+    appointmentType    String   @default("Vocal Recording") @map("appointment_type")
     note       String?
     user_id     Int      @map("user_id")
     status     String @default("Pending")
     isCancel   Boolean @default(false)
+    cancelRequested   Boolean @default(false) @map("cancel_requested")
+    cancelReason      String? @map("cancel_reason")
+    cancelApprovedAt  DateTime? @map("cancel_approved_at")
+    rejectReason      String? @map("reject_reason")
 
     user       User     @relation(fields: [user_id], references: [id])
     appointment       VocalRecordingAppointment     @relation(fields: [appointment_id], references: [id])

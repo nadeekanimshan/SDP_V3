@@ -1,11 +1,14 @@
 import { prisma, VocalRecordingAppointmentDetail,VocalRecordingAppointment } from "../../config/database/prisma"
+import SlotAvailabilityService from "./SlotAvailabilityService"
 import { AppointmentAvailability } from "../../config/constant"
 import { format } from "date-fns";
 import { date } from "zod";
 
 type getAppointmentsByDateResponse={
     date: string;
-    bookedTimes: string[][] ;
+    bookedTimes: string[][];
+    availableSlotTimes: string[];
+    isDayAvailable: boolean;
 }
 type getAllAppointmentsByDateResponse={
     appointment:VocalRecordingAppointment | null,
@@ -16,6 +19,7 @@ type createAppointment={
     date:string,
     startTime:string,
     endTime:string,
+    appointmentType:string,
     user_id: number
 }
 
@@ -28,40 +32,54 @@ type makePayment={
     status?:string,
     user_id:number
 }
-const getAppointmentsByDate =async(date:string) :Promise<getAppointmentsByDateResponse | null>=>{
-    const appointments=await prisma.vocalRecordingAppointment.findFirst({
-        where:{
-            date
-        }
-    })
-    console.log("appointments >>>>>>>>>>>> ",appointments)
-    if(!appointments){
-        return {
-            date:date,
-            bookedTimes:[]
-        }
-    }
-     const details= await prisma.vocalRecordingAppointmentDetail.findMany({
-        where:{
-            appointment_id:appointments?.id
-        }
-    })
-    if(!details){
-        return {
-            date:date,
-            bookedTimes:[]
-        }
-    }
+const getAppointmentsByDate = async (date: string): Promise<getAppointmentsByDateResponse | null> => {
+    const { availableSlotTimes, isDayAvailable } = await SlotAvailabilityService.getForDate(date);
 
-    const bookedTimes=details.map((detail:VocalRecordingAppointmentDetail)=>[detail.time_in,detail.time_out])
-    
-    return {
-        date:date,
-        bookedTimes:bookedTimes
+    const appointments = await prisma.vocalRecordingAppointment.findFirst({
+        where: { date },
+    });
+    if (!appointments) {
+        return {
+            date,
+            bookedTimes: [],
+            availableSlotTimes,
+            isDayAvailable,
+        };
     }
-}
+    const details = await prisma.vocalRecordingAppointmentDetail.findMany({
+        where: { appointment_id: appointments.id, isCancel: false },
+    });
+    const bookedTimes = details.map((d: VocalRecordingAppointmentDetail) => [d.time_in, d.time_out]);
+
+    return {
+        date,
+        bookedTimes,
+        availableSlotTimes,
+        isDayAvailable,
+    };
+};
 
 const createAppointment=async(data:createAppointment)=>{
+    const slotData = await getAppointmentsByDate(data.date);
+    if (!slotData || !slotData.isDayAvailable) {
+        throw new Error("Studio is closed on this date");
+    }
+    if (!slotData.availableSlotTimes.includes(data.startTime)) {
+        throw new Error("Selected time slot is not available");
+    }
+    const overlaps = slotData.bookedTimes.some((slot: string[]) => {
+        const bStart = slot[0];
+        const bEnd = slot[1];
+        if (!bStart || !bEnd) return false;
+        return (
+            (data.startTime >= bStart && data.startTime < bEnd) ||
+            (data.endTime > bStart && data.endTime <= bEnd) ||
+            (data.startTime <= bStart && data.endTime >= bEnd)
+        );
+    });
+    if (overlaps) {
+        throw new Error("This time slot is already booked");
+    }
 
     let appointment = await prisma.vocalRecordingAppointment.findFirst({
         where:{
@@ -74,6 +92,7 @@ const createAppointment=async(data:createAppointment)=>{
                appointment_id:appointment.id,
                time_in:data.startTime,
                time_out:data.endTime,
+               appointmentType:data.appointmentType,
                note:"",
                user_id:data.user_id
            }
@@ -92,6 +111,7 @@ const createAppointment=async(data:createAppointment)=>{
                 appointment_id:appointment.id,
                 time_in:data.startTime,
                 time_out:data.endTime,
+                appointmentType:data.appointmentType,
                 note:"",
                 user_id:data.user_id
             }
@@ -148,14 +168,15 @@ const getAllAppointmentsByDate =async(date:string) :Promise<getAllAppointmentsBy
     }
 }
 
-const updateStatus=async(id:number,status:string)=>{
+const updateStatus=async(id:number,status:string,rejectReason?:string|null)=>{
+    const data: Record<string, unknown> = { status };
+    if (status === "rejected") {
+        data.isCancel = true;
+        data.rejectReason = rejectReason ?? null;
+    }
     const appointment=await prisma.vocalRecordingAppointmentDetail.update({
-        where:{
-            id
-        },
-        data:{
-            status
-        }
+        where:{ id },
+        data
     })
     return appointment
 }
@@ -230,7 +251,10 @@ const getAppointmentByUserId=async(id:number)=>{
     const appointment=await prisma.vocalRecordingAppointmentDetail.findMany({
         where:{
             user_id:id,
-            isCancel:false
+            OR:[
+                { isCancel:false },
+                { status:"rejected" }
+            ]
         },
         include:{
             user:true,
@@ -239,6 +263,45 @@ const getAppointmentByUserId=async(id:number)=>{
     })
     return appointment
 }
+
+type GetAllAppointmentsFilters = {
+    date?: string;
+    status?: string;
+};
+
+const getAllAppointments = async (filters?: GetAllAppointmentsFilters) => {
+    const where: Record<string, unknown> = {
+        isCancel: false,
+        ...(filters?.date && { appointment: { date: filters.date } }),
+    };
+    if (filters?.status === "cancel_requested") {
+        where.cancelRequested = true;
+    } else if (filters?.status) {
+        where.status = filters.status;
+    }
+
+    const details = await prisma.vocalRecordingAppointmentDetail.findMany({
+        where,
+        include: {
+            user: {
+                select: {
+                    id: true,
+                    firstName: true,
+                    lastName: true,
+                    contactNumber: true,
+                    address: true,
+                    city: true,
+                    district: true,
+                    email: true,
+                    typeId: true,
+                },
+            },
+            appointment: true,
+        },
+        orderBy: [{ appointment: { date: "asc" } }, { time_in: "asc" }],
+    });
+    return details;
+};
 
 const cancelAppointment=async(id:number)=>{
     const appointment=await prisma.vocalRecordingAppointmentDetail.update({
@@ -250,6 +313,46 @@ const cancelAppointment=async(id:number)=>{
         }
     })
     return appointment
+}
+
+const requestCancelAppointment=async(id:number,reason:string,userId:number)=>{
+    const detail=await prisma.vocalRecordingAppointmentDetail.findUnique({
+        where:{id}
+    })
+    if(!detail) throw new Error("Appointment not found")
+    if(detail.user_id!==userId) throw new Error("Unauthorized")
+    if(detail.isCancel) throw new Error("Already cancelled")
+    const updated=await prisma.vocalRecordingAppointmentDetail.update({
+        where:{id},
+        data:{
+            cancelRequested:true,
+            cancelReason:reason
+        }
+    })
+    return updated
+}
+
+const approveCancelRequest=async(id:number)=>{
+    const updated=await prisma.vocalRecordingAppointmentDetail.update({
+        where:{id},
+        data:{
+            isCancel:true,
+            cancelApprovedAt:new Date()
+        }
+    })
+    return updated
+}
+
+const rejectCancelRequest=async(id:number,reason:string)=>{
+    const updated=await prisma.vocalRecordingAppointmentDetail.update({
+        where:{id},
+        data:{
+            cancelRequested:false,
+            cancelReason:null,
+            rejectReason:reason
+        }
+    })
+    return updated
 }
 
 
@@ -314,6 +417,7 @@ const getUpcomingAppointmentsCount=async()=>{
 
 
 const AppointmentService={
+    getAllAppointments,
     getAllAppointmentsByDate,
     getAppointmentsByDate,
     createAppointment,
@@ -324,6 +428,9 @@ const AppointmentService={
     getPaymentById,
     getAppointmentByUserId,
     cancelAppointment,
+    requestCancelAppointment,
+    approveCancelRequest,
+    rejectCancelRequest,
     getTodayAppointmentsCount,
     getUpcomingAppointmentsCount
 }

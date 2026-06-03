@@ -101,29 +101,23 @@ export default function AppoimentPayment() {
   };
 
   return (
-    <div className="flex flex-row gap-6 w-full py-6">
+    <div className="flex flex-col lg:flex-row gap-6 w-full py-6">
       <ToastContainer autoClose={5000} position="top-right" />
-      <div className="relative overflow-x-auto shadow-md sm:rounded-lg w-3/4">
-        <div className='flex flex-row gap-4 items-center justify-start mb-6'>
-          <input value={date} onChange={(e) => setDate(e.target.value)} type="date" className='w-[200px] h-[40px] border border-gray-400 rounded bg-gray-200 p-2' />
-          <form className="w-md mx-2" onSubmit={(e) => e.preventDefault()}>
+      <div className="flex-1">
+        <div className="flex flex-wrap gap-4 items-center mb-6">
+          <input value={date} onChange={(e) => setDate(e.target.value)} type="date" className="w-[200px] h-10 border border-slate-600 rounded-lg bg-slate-700/50 text-white px-3 focus:ring-2 focus:ring-amber-500" />
+          <form className="flex-1 min-w-[200px]" onSubmit={(e) => e.preventDefault()}>
             <div className="relative">
-              <div className="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
-                <FaSearch className="w-4 h-4 text-gray-500" />
-              </div>
-              <input
-                type="search"
-                className="block w-full p-4 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-purple-500 focus:border-purple-500 dark:bg-gray-700 dark:text-white"
-                placeholder="Search by name..."
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-              />
+              <FaSearch className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
+              <input type="search" className="block w-full p-3 pl-10 text-sm text-white border border-slate-600 rounded-lg bg-slate-700/50 placeholder-slate-500 focus:ring-2 focus:ring-amber-500" placeholder="Search by name..." value={search} onChange={(e) => setSearch(e.target.value)} />
             </div>
           </form>
         </div>
 
-        <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
-          <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+        <div className="backdrop-blur-sm bg-slate-800/50 rounded-2xl border border-slate-700/50 shadow-xl overflow-hidden">
+          <div className="overflow-x-auto">
+        <table className="w-full text-sm text-left">
+          <thead className="text-xs uppercase bg-slate-700/50 text-slate-300">
             <tr>
               <th className="px-6 py-3">Client Name</th>
               <th className="px-6 py-3">Client Contact</th>
@@ -135,78 +129,41 @@ export default function AppoimentPayment() {
           </thead>
           <tbody>
             {payments.length === 0 ? (
-              <tr>
-                <td colSpan={6} className="text-center py-4">No data found</td>
-              </tr>
+              <tr><td colSpan={6} className="text-center py-12 text-slate-500">No data found</td></tr>
             ) : (
               payments.map((item) => (
-                <tr key={item.id}
-                  onClick={() => {
-                    setSelectedPayment(item);
-                    setAppointmentId(item.appointment_id.toString());
-                    setAmount(item.amount);
-                  }}
-                  className="cursor-pointer bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600"
+                <tr key={item.id} onClick={() => { setSelectedPayment(item); setAppointmentId(item.appointment_id?.toString() || ""); setAmount(item.amount || ""); }} className="cursor-pointer border-b border-slate-700/50 hover:bg-slate-700/30 transition-colors"
                 >
-                  <td className="px-6 py-4">{item.user.firstName} {item.user.lastName}</td>
-                  <td className="px-6 py-4">{item.user.contactNumber}</td>
-                  <td className="px-6 py-4">{item.user.email}</td>
-                  <td className="px-6 py-4">{item.paymentDate?.split("T")[0]} | {item.appointment?.time_in} - {item.appointment?.time_out}</td>
-                  <td className="px-6 py-4">{item.amount}</td>
-                  <td className="px-6 py-4 capitalize">{item.status}</td>
+                  <td className="px-6 py-4 text-white">{item.user?.firstName} {item.user?.lastName}</td>
+                  <td className="px-6 py-4 text-slate-300">{item.user?.contactNumber}</td>
+                  <td className="px-6 py-4 text-slate-300">{item.user?.email}</td>
+                  <td className="px-6 py-4 text-slate-300">{item.paymentDate?.split("T")[0]} | {item.appointment?.time_in} - {item.appointment?.time_out}</td>
+                  <td className="px-6 py-4 text-slate-300">{item.amount}</td>
+                  <td className="px-6 py-4 text-slate-300 capitalize">{item.status}</td>
                 </tr>
               ))
             )}
           </tbody>
         </table>
+          </div>
+        </div>
       </div>
 
-      <div className="flex flex-col gap-4 w-1/4 text-white">
-        <h1 className="text-2xl font-bold">Make your payment</h1>
-        <div className="flex flex-col gap-4">
-          <div className="flex flex-col gap-2">
-            <label>Appointment ID</label>
-            <input type="text" value={appointmentId} onChange={(e) => setAppointmentId(e.target.value)} className="border border-gray-400 rounded p-2 bg-gray-700" />
-
-            <span>Customer Name: {selectedPayment ? `${selectedPayment.user.firstName} ${selectedPayment.user.lastName}` : "-"}</span>
-            <span>Customer Contact: {selectedPayment?.user.contactNumber || "-"}</span>
-            <span>Customer Email: {selectedPayment?.user.email || "-"}</span>
-            <span>Appointment Date/Time: {selectedPayment?.appointment?.date || "-"} | {selectedPayment?.time_in} - {selectedPayment?.time_out}</span>
+      <div className="flex flex-col gap-4 lg:w-80 shrink-0">
+        <div className="backdrop-blur-sm bg-slate-800/50 rounded-2xl border border-slate-700/50 p-6">
+          <h2 className="text-xl font-bold text-white mb-4">Make Payment</h2>
+          <div className="flex flex-col gap-4">
+            <div><label className="block text-sm text-slate-400 mb-1">Appointment ID</label><input type="text" value={appointmentId} onChange={(e) => setAppointmentId(e.target.value)} className="w-full border border-slate-600 rounded-lg p-2 bg-slate-700/50 text-white" /></div>
+            <p className="text-slate-300 text-sm">Customer: {selectedPayment ? `${selectedPayment.user?.firstName} ${selectedPayment.user?.lastName}` : "-"}</p>
+            <p className="text-slate-300 text-sm">Contact: {selectedPayment?.user?.contactNumber || "-"}</p>
+            <p className="text-slate-300 text-sm">Email: {selectedPayment?.user?.email || "-"}</p>
+            <p className="text-slate-300 text-sm">Date/Time: {selectedPayment?.appointment?.date || "-"} | {selectedPayment?.time_in} - {selectedPayment?.time_out}</p>
+            <div><label className="block text-sm text-slate-400 mb-1">Amount</label><input type="text" value={amount} onChange={(e) => setAmount(e.target.value)} className="w-full border border-slate-600 rounded-lg p-2 bg-slate-700/50 text-white" /></div>
+            <div><label className="block text-sm text-slate-400 mb-1">Payment Type</label><select value={paymentType} onChange={(e) => setPaymentType(e.target.value)} className="w-full border border-slate-600 rounded-lg p-2 bg-slate-700/50 text-white"><option value="">-- Select --</option><option value="Cash">Cash</option><option value="Card">Card</option></select></div>
+            {paymentType === "Card" && <div><label className="block text-sm text-slate-400 mb-1">Card Number</label><input type="text" value={cardNumber} onChange={(e) => setCardNumber(e.target.value)} className="w-full border border-slate-600 rounded-lg p-2 bg-slate-700/50 text-white" /></div>}
+            <div><label className="block text-sm text-slate-400 mb-1">Note</label><textarea value={note} onChange={(e) => setNote(e.target.value)} className="w-full border border-slate-600 rounded-lg p-2 bg-slate-700/50 text-white" /></div>
+            <button onClick={handleSubmit} disabled={!selectedPayment || !amount || !paymentType} className="w-full py-2 px-4 bg-amber-500 text-slate-900 font-medium rounded-lg hover:bg-amber-400 disabled:opacity-50 disabled:cursor-not-allowed">Pay Now</button>
           </div>
-
-          <div className="flex flex-col gap-2">
-            <label>Amount</label>
-            <input type="text" value={amount} onChange={(e) => setAmount(e.target.value)} className="border border-gray-400 rounded p-2 bg-gray-700" />
-          </div>
-
-          <div className="flex flex-col gap-2">
-            <label>Payment Type</label>
-            <select value={paymentType} onChange={(e) => setPaymentType(e.target.value)} className="border border-gray-400 rounded p-2 bg-gray-700">
-              <option value="">-- Select --</option>
-              <option value="Cash">Cash</option>
-              <option value="Card">Card</option>
-            </select>
-          </div>
-
-          {paymentType === "Card" && (
-            <div className="flex flex-col gap-2">
-              <label>Card Number</label>
-              <input type="text" value={cardNumber} onChange={(e) => setCardNumber(e.target.value)} className="border border-gray-400 rounded p-2 bg-gray-700" />
-            </div>
-          )}
-
-          <div className="flex flex-col gap-2">
-            <label>Note</label>
-            <textarea value={note} onChange={(e) => setNote(e.target.value)} className="border border-gray-400 rounded p-2 bg-gray-700" />
-          </div>
-
-          <button
-            onClick={handleSubmit}
-            disabled={!selectedPayment || !amount || !paymentType}
-            className="bg-green-700 hover:bg-green-500 text-white font-bold py-2 px-4 rounded disabled:opacity-50"
-          >
-            Pay Now
-          </button>
         </div>
       </div>
     </div>

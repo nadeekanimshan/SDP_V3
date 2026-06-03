@@ -7,10 +7,11 @@ import bg from "../assets/icon/1L.jpg"
 import bank from "../assets/icon/card .png"
 import { useNavigate } from "react-router-dom";
 import { UseAxios } from "../hook/useAxios";
+import { SYSTEM_KEY } from "../config/Constent";
 interface PaymentFormProps {
     navigateTo: string;
     backTo: string;
-    payment:"REGISTRATION" | "INSTALLMENT"
+    payment: "REGISTRATION" | "INSTALLMENT" | "FULL"
 }
 
 const PaymentForm: React.FC<PaymentFormProps> = ({navigateTo, backTo, payment}) => {
@@ -42,7 +43,7 @@ const PaymentForm: React.FC<PaymentFormProps> = ({navigateTo, backTo, payment}) 
         } else {
             console.log("Payment Method:", paymentMethod);
             setStatus("Payment Successful ✅");
-            if (payment === "REGISTRATION") {
+            if (payment === "REGISTRATION" || payment === "FULL") {
                 classRegistrationPayment();
             } else {
                 classInstallmentPayment();
@@ -52,10 +53,9 @@ const PaymentForm: React.FC<PaymentFormProps> = ({navigateTo, backTo, payment}) 
 
     async function classInstallmentPayment() {
         try {
-    
             await UseAxios(`classes/installment`, "POST", {
              installment_id: Number(localStorage.getItem("installment_id")),
-             user_id: Number(localStorage.getItem("id")),
+             user_id: Number(localStorage.getItem(SYSTEM_KEY.ID)),
              paymentMethod: "card",
              status: "done"
             });
@@ -71,41 +71,46 @@ const PaymentForm: React.FC<PaymentFormProps> = ({navigateTo, backTo, payment}) 
     async function classRegistrationPayment() {
         try {
           const classId = Number(localStorage.getItem("classId"));
-          const userId = Number(localStorage.getItem("id"));
-      
-          // Get class start date
-          const classStartDateRes = await UseAxios(
-            `classes/start-date/${classId}`,
-            "GET"
-          );
-          const classStartDateStr = classStartDateRes.data.startDate;
-          console.log(classStartDateStr)
-          const classStartDate = new Date(classStartDateStr);
-      
-          // Get class details
-          const classRes = await UseAxios(
-            `classes/${classId}`,
-            "GET"
-          );
-          const { installments_count, installments_price } = classRes.data;
-      
-          // Create installment objects with due dates
-          const installments = Array.from({ length: installments_count }, (_, index) => {
-            const dueDate = addMonths(classStartDate, index); // Add index months
-            return {
-              amount: Number(installments_price),
-              status: index === 0 ? "done" : "pending",
-              installments_Due_Date: format(dueDate, "yyyy-MM-dd")
-            };
-          });
-      
-          // Post to registration endpoint
-          await UseAxios(`classes/register`, "POST", {
-            class_id: classId,
-            user_id: userId,
-            installments
-          });
-      
+          const userId = Number(localStorage.getItem(SYSTEM_KEY.ID));
+          const paymentType = localStorage.getItem("payment_type") || "installment";
+
+          if (payment === "FULL" || paymentType === "full") {
+            // Full payment: single installment with full_price, status done
+            const classRes = await UseAxios(`classes/${classId}`, "GET");
+            const { full_price, startDate } = classRes.data;
+            const installments = [{
+              amount: Number(full_price),
+              status: "done",
+              installments_Due_Date: format(new Date(startDate || new Date()), "yyyy-MM-dd")
+            }];
+            await UseAxios(`classes/register`, "POST", {
+              class_id: classId,
+              user_id: userId,
+              installments
+            });
+          } else {
+            // Installment payment: first done, rest pending
+            const classStartDateRes = await UseAxios(`classes/start-date/${classId}`, "GET");
+            const classStartDateStr = classStartDateRes.data.startDate;
+            const classStartDate = new Date(classStartDateStr);
+            const classRes = await UseAxios(`classes/${classId}`, "GET");
+            const { installments_count, installments_price } = classRes.data;
+            const installments = Array.from({ length: installments_count }, (_, index) => {
+              const dueDate = addMonths(classStartDate, index);
+              return {
+                amount: Number(installments_price),
+                status: index === 0 ? "done" : "pending",
+                installments_Due_Date: format(dueDate, "yyyy-MM-dd")
+              };
+            });
+            await UseAxios(`classes/register`, "POST", {
+              class_id: classId,
+              user_id: userId,
+              installments
+            });
+          }
+
+          localStorage.removeItem("payment_type");
           setStatus("Payment and Registration Successful ✅");
           navigate(navigateTo);
         } catch (err: unknown) {

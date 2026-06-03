@@ -1,66 +1,87 @@
-import NavBar from "../components/vocalTraningClass/NavBar";
+import { AppLayout } from "../components/layout";
 import MyClassDetails from "../components/MyClassDetails";
 import VocalTraningClassCard from "../components/vocalTraningClass/VocalTraningClassCard";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { UseAxios } from "../hook/useAxios";
+import { SYSTEM_KEY } from "../config/Constent";
 
 type TrainingClass = {
-    id: number
-    name: string
-    description: string
-    duration: string
-    day: string
-    startTime: string
-    endTime: string
-    installments_count: number
-    installments_price: number
-    full_price: number
-}
+  id: number;
+  name: string;
+  description: string;
+  duration: string;
+  day: string;
+  startTime: string;
+  endTime: string;
+  installments_count: number;
+  installments_price: number;
+  full_price: number;
+};
 
 export default function VocalTraningClass() {
+  const [loading, setLoading] = useState<boolean>(false);
+  const [error, setError] = useState<Error | null>(null);
+  const [classes, setClasses] = useState<TrainingClass[]>([]);
+  const [enrolledClassIds, setEnrolledClassIds] = useState<number[]>([]);
 
-    const [loading, setLoading] = useState<boolean>(false);
-    const [error, setError] = useState<Error | null>(null);
-    const [classes, setClasses] = useState<TrainingClass[]>([]);
+  const fetchEnrolledClasses = useCallback(async () => {
+    const userId = localStorage.getItem(SYSTEM_KEY.ID);
+    if (!userId) return;
+    try {
+      const res = await UseAxios(`classes/user/${userId}`, "GET");
+      const data = res?.data ?? res;
+      const list = Array.isArray(data) ? data : [];
+      setEnrolledClassIds(list.map((c: { class?: { id: number } }) => c.class?.id).filter(Boolean));
+    } catch {
+      setEnrolledClassIds([]);
+    }
+  }, []);
 
-    useEffect(() => {
+  useEffect(() => {
+    const getClasses = async () => {
+      setLoading(true);
       try {
-      setLoading(true)
-      const getEvents = async () => {
-          const response = await UseAxios('classes', "GET");
-          setClasses(response.data);
-        console.log(classes)
-        setLoading(false)
-        setError(null)
-  }
-  getEvents()
-} catch (error) {
-  setError(error as Error)
-} finally {
-  setLoading(false)
-}
-}, [])
-    return (
+        const [classesRes] = await Promise.all([
+          UseAxios("classes", "GET"),
+          fetchEnrolledClasses(),
+        ]);
+        setClasses(classesRes?.data ?? classesRes ?? []);
+        setError(null);
+      } catch (err) {
+        setError(err as Error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    getClasses();
+  }, [fetchEnrolledClasses]);
+
+  return (
+    <AppLayout title="Vocal Training Class" subtitle="Improve your singing with our expert vocal coaches.">
+      <div className="space-y-8">
+        <MyClassDetails />
         <div>
-            <NavBar/>
-            <div className="relative mt-12">
-                <MyClassDetails/>
-            </div>
-            <div className="flex flex-wrap flex-col justify-center items-center gap-6 bg-gray-100 mt-6">
-                <div className="w-full p-4">
-                    <h1 className="text-2xl font-bold">Vocal Training Class</h1>
-                </div>
-                {loading && <p>Loading...</p>}
-                {error && <p>Error: {error.message}</p>}
-
-                {classes?.map((trainingClass: TrainingClass) => (
-                    <VocalTraningClassCard key={trainingClass.id} id={trainingClass.id} title={trainingClass.name} description={trainingClass.description} duration={trainingClass.duration} time={trainingClass.day} installments={trainingClass.installments_count.toString()} fullPayment={trainingClass.full_price.toString()} installmentPayment={trainingClass.installments_price.toString()}/>
-                ))}
-
-                {/* <VocalTraningClassCard title="Vocal Training Class" description="Improve your singing with our expert vocal coaches through personalized training sessions." duration="1 hour" time="Wensdays 6:00 PM - 7:00 PM" installments="6" fullPayment="6000.00" installmentPayment="1000.00"/>
-                <VocalTraningClassCard title="Vocal Training Class" description="Improve your singing with our expert vocal coaches through personalized training sessions." duration="1 hour" time="Wensdays 6:00 PM - 7:00 PM" installments="6" fullPayment="6000.00" installmentPayment="1000.00"/>
-                <VocalTraningClassCard title="Vocal Training Class" description="Improve your singing with our expert vocal coaches through personalized training sessions." duration="1 hour" time="Wensdays 6:00 PM - 7:00 PM" installments="6" fullPayment="6000.00" installmentPayment="1000.00"/> */}
-            </div>
+          <h2 className="text-xl font-bold text-white mb-6">Available Classes</h2>
+          {loading && <p className="text-slate-300">Loading...</p>}
+          {error && <p className="text-red-400">Error: {error.message}</p>}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {classes?.map((trainingClass: TrainingClass) => (
+              <VocalTraningClassCard
+                key={trainingClass.id}
+                id={trainingClass.id}
+                title={trainingClass.name}
+                description={trainingClass.description}
+                duration={trainingClass.duration}
+                time={trainingClass.day}
+                installments={trainingClass.installments_count.toString()}
+                fullPayment={trainingClass.full_price.toString()}
+                installmentPayment={trainingClass.installments_price.toString()}
+                isEnrolled={enrolledClassIds.includes(trainingClass.id)}
+              />
+            ))}
+          </div>
         </div>
-    )
+      </div>
+    </AppLayout>
+  );
 }

@@ -15,11 +15,22 @@ const getAppointmentsByDate =async(req:Request,res:Response,next:NextFunction)=>
     }
 }
 
+const APPOINTMENT_TYPES = ["Vocal Recording", "Instrument Recording", "Song Discussion & Consultation"];
+
 const createAppointment=async(req:Request,res:Response,next:NextFunction)=>{
     try {
-        const {date,startTime,endTime,user_id}=req.body
-        if(!date || !startTime || !endTime || !user_id){
-             res.status(400).json({message:"Date is required"});
+        const {date,startTime,endTime,appointmentType}=req.body
+        const userId=req.user?.userId
+        if(!date || !startTime || !endTime){
+             res.status(400).json({message:"Date, startTime and endTime are required"});
+             return;
+        }
+        if(!appointmentType || !APPOINTMENT_TYPES.includes(appointmentType)){
+             res.status(400).json({message:"Please select a valid appointment type: Vocal Recording, Instrument Recording, or Song Discussion & Consultation"});
+             return;
+        }
+        if(!userId){
+             res.status(401).json({message:"Unauthorized - please log in to book"});
              return;
         }
 
@@ -34,12 +45,25 @@ const createAppointment=async(req:Request,res:Response,next:NextFunction)=>{
             return;
         }
 
-        const appointments=await AppointmentService.createAppointment({date,startTime,endTime,user_id});
+        const appointments=await AppointmentService.createAppointment({date,startTime,endTime,appointmentType,user_id:Number(userId)});
         res.status(200).json(appointments);
     } catch (error) {
         next(error)
     }
 }
+
+const getAllAppointments = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+         console.log("FILTERS FROM FRONTEND >>>", req.query);
+        const date = req.query.date as string | undefined;
+        const status = req.query.status as string | undefined;
+        const filters = (date || status) ? { date, status } : undefined;
+        const appointments = await AppointmentService.getAllAppointments(filters);
+        res.status(200).json(appointments);
+    } catch (error) {
+        next(error);
+    }
+};
 
 const getAllAppointmentsByDate =async(req:Request,res:Response,next:NextFunction)=>{
     try {
@@ -59,11 +83,16 @@ const updateStatus=async(req:Request,res:Response,next:NextFunction)=>{
     try {
         const id=Number(req.params.id)
         const status= req.body.status
+        const rejectReason= req.body.rejectReason
         if(!id || !status){
              res.status(400).json({message:"Id and status are required"});
              return;
         }
-        const appointments=await AppointmentService.updateStatus(id,status);
+        if(status === "rejected" && !rejectReason?.trim()){
+             res.status(400).json({message:"Rejection reason is required when rejecting an appointment"});
+             return;
+        }
+        const appointments=await AppointmentService.updateStatus(id,status,rejectReason?.trim() || null);
         res.status(200).json(appointments);
     } catch (error) {
         next(error)
@@ -158,6 +187,59 @@ const cancelAppointment=async(req:Request,res:Response,next:NextFunction)=>{
     }
 }
 
+const requestCancelAppointment=async(req:Request,res:Response,next:NextFunction)=>{
+    try {
+        const id=Number(req.params.id)
+        const {reason}=req.body
+        const userId=req.user?.userId
+        if(!id || !reason?.trim()){
+             res.status(400).json({message:"Id and reason are required"});
+             return;
+        }
+        if(!userId){
+             res.status(401).json({message:"Unauthorized"});
+             return;
+        }
+        const result=await AppointmentService.requestCancelAppointment(id,reason.trim(),Number(userId));
+        res.status(200).json(result);
+    } catch (error) {
+        next(error)
+    }
+}
+
+const approveCancelRequest=async(req:Request,res:Response,next:NextFunction)=>{
+    try {
+        const id=Number(req.params.id)
+        if(!id){
+             res.status(400).json({message:"Id is required"});
+             return;
+        }
+        const result=await AppointmentService.approveCancelRequest(id);
+        res.status(200).json(result);
+    } catch (error) {
+        next(error)
+    }
+}
+
+const rejectCancelRequest=async(req:Request,res:Response,next:NextFunction)=>{
+    try {
+        const id=Number(req.params.id)
+        const reason=req.body.reason?.trim()
+        if(!id){
+             res.status(400).json({message:"Id is required"});
+             return;
+        }
+        if(!reason){
+             res.status(400).json({message:"Reason is required when rejecting a cancel request"});
+             return;
+        }
+        const result=await AppointmentService.rejectCancelRequest(id,reason);
+        res.status(200).json(result);
+    } catch (error) {
+        next(error)
+    }
+}
+
 const getTodayAppointmentsCount=async(req:Request,res:Response,next:NextFunction)=>{
     try {
         const count=await AppointmentService.getTodayAppointmentsCount();
@@ -180,6 +262,7 @@ const AppointmentController={
     getAppointmentsByDate,
     createAppointment,
     updateStatus,
+    getAllAppointments,
     getAllAppointmentsByDate,
     getAppointmentById,
     getAppointmentByDate,
@@ -187,6 +270,9 @@ const AppointmentController={
     getPaymentById,
     getAppointmentByUserId,
     cancelAppointment,
+    requestCancelAppointment,
+    approveCancelRequest,
+    rejectCancelRequest,
     getTodayAppointmentsCount,
     getUpcomingAppointmentsCount
 }

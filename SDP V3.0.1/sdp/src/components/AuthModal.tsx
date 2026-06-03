@@ -5,7 +5,6 @@ import 'react-toastify/dist/ReactToastify.css';
 import { useNavigate } from 'react-router-dom';
 
 import bg from '../assets/icon/1L.jpg'
-import Navbar from './vocalTraningClass/NavBar';
 import { SYSTEM_KEY, UserType } from '../config/Constent';
 
 
@@ -126,14 +125,20 @@ export default function AuthModal() {
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" style={{ backgroundImage: `url(${bg})`, backgroundSize: "cover", backgroundPosition: "center" }}>
-        <Navbar/>
-      <div className="bg-white rounded-lg p-6 w-full max-w-md">
+    <div className="fixed inset-0 z-[9999] flex items-center justify-center overflow-y-auto py-20" style={{ backgroundImage: `url(${bg})`, backgroundSize: "cover", backgroundPosition: "center" }}>
+      <div className="absolute inset-0 bg-black/50 z-0" aria-hidden="true" />
+      <button
+        onClick={() => navigate('/')}
+        className="absolute top-4 left-4 z-20 flex items-center gap-1.5 px-3 py-2 text-sm text-white/90 hover:text-white bg-white/10 hover:bg-white/20 rounded-lg backdrop-blur-sm transition-colors"
+      >
+        <span>←</span> Back
+      </button>
+      <div className="relative z-20 bg-white rounded-lg p-6 w-full max-w-md shadow-2xl mx-4 my-auto">
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-2xl font-bold">
             {isLogin ? 'Login' : 'Register'}
           </h2>
-          <button onClick={() => navigate('/')} className="text-gray-500 hover:text-gray-700">
+          <button onClick={() => navigate('/')} className="text-gray-500 hover:text-gray-700 text-2xl leading-none">
             &times;
           </button>
         </div>
@@ -264,7 +269,7 @@ export default function AuthModal() {
           </button>
         </div>
       </div>
-      <ToastContainer position="top-center" autoClose={3000} />
+      <ToastContainer position="top-center" autoClose={3000} className="!z-[10000]" />
     </div>
   );
 }

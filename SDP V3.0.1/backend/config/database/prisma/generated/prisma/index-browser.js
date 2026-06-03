@@ -158,6 +158,7 @@ exports.Prisma.EventScalarFieldEnum = {
   endDate: 'endDate',
   location: 'location',
   time: 'time',
+  eventUrl: 'eventUrl',
   note: 'note'
 };
 
@@ -197,6 +198,13 @@ exports.Prisma.Class_InstallmentScalarFieldEnum = {
   installments_Due_Date: 'installments_Due_Date'
 };
 
+exports.Prisma.SlotAvailabilityScalarFieldEnum = {
+  id: 'id',
+  date: 'date',
+  slotTime: 'slotTime',
+  isAvailable: 'isAvailable'
+};
+
 exports.Prisma.VocalRecordingAppointmentScalarFieldEnum = {
   id: 'id',
   date: 'date',
@@ -209,10 +217,15 @@ exports.Prisma.VocalRecordingAppointmentDetailScalarFieldEnum = {
   appointment_id: 'appointment_id',
   time_in: 'time_in',
   time_out: 'time_out',
+  appointmentType: 'appointmentType',
   note: 'note',
   user_id: 'user_id',
   status: 'status',
-  isCancel: 'isCancel'
+  isCancel: 'isCancel',
+  cancelRequested: 'cancelRequested',
+  cancelReason: 'cancelReason',
+  cancelApprovedAt: 'cancelApprovedAt',
+  rejectReason: 'rejectReason'
 };
 
 exports.Prisma.PaymentScalarFieldEnum = {
@@ -263,6 +276,7 @@ exports.Prisma.EventOrderByRelevanceFieldEnum = {
   title: 'title',
   description: 'description',
   location: 'location',
+  eventUrl: 'eventUrl',
   note: 'note'
 };
 
@@ -280,6 +294,11 @@ exports.Prisma.Class_InstallmentOrderByRelevanceFieldEnum = {
   paymentMethod: 'paymentMethod'
 };
 
+exports.Prisma.SlotAvailabilityOrderByRelevanceFieldEnum = {
+  date: 'date',
+  slotTime: 'slotTime'
+};
+
 exports.Prisma.VocalRecordingAppointmentOrderByRelevanceFieldEnum = {
   date: 'date',
   status: 'status',
@@ -289,8 +308,11 @@ exports.Prisma.VocalRecordingAppointmentOrderByRelevanceFieldEnum = {
 exports.Prisma.VocalRecordingAppointmentDetailOrderByRelevanceFieldEnum = {
   time_in: 'time_in',
   time_out: 'time_out',
+  appointmentType: 'appointmentType',
   note: 'note',
-  status: 'status'
+  status: 'status',
+  cancelReason: 'cancelReason',
+  rejectReason: 'rejectReason'
 };
 
 exports.Prisma.PaymentOrderByRelevanceFieldEnum = {
@@ -311,6 +333,7 @@ exports.Prisma.ModelName = {
   Class: 'Class',
   Class_Student: 'Class_Student',
   Class_Installment: 'Class_Installment',
+  SlotAvailability: 'SlotAvailability',
   VocalRecordingAppointment: 'VocalRecordingAppointment',
   VocalRecordingAppointmentDetail: 'VocalRecordingAppointmentDetail',
   Payment: 'Payment'

@@ -5,6 +5,7 @@ const AppointmentRouter=Router()
 
 AppointmentRouter.get("/today",AppointmentController.getTodayAppointmentsCount)
 AppointmentRouter.get("/upcoming",AppointmentController.getUpcomingAppointmentsCount)
+AppointmentRouter.get("/list/all",AppointmentController.getAllAppointments)
 AppointmentRouter.get("/:date",AppointmentController.getAppointmentsByDate)
 AppointmentRouter.post("/",AppointmentController.createAppointment)
 AppointmentRouter.get("/all/:date",AppointmentController.getAllAppointmentsByDate)
@@ -15,6 +16,9 @@ AppointmentRouter.post("/payment",AppointmentController.makeAppointmentPayment)
 AppointmentRouter.get("/payment/:id",AppointmentController.getPaymentById)
 AppointmentRouter.get("/user/:id",AppointmentController.getAppointmentByUserId)
 AppointmentRouter.put("/cancel/:id",AppointmentController.cancelAppointment)
+AppointmentRouter.post("/cancel-request/:id",AppointmentController.requestCancelAppointment)
+AppointmentRouter.put("/cancel-approve/:id",AppointmentController.approveCancelRequest)
+AppointmentRouter.put("/cancel-reject/:id",AppointmentController.rejectCancelRequest)
 
 
 export default AppointmentRouter

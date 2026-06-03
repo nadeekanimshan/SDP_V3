@@ -130,21 +130,19 @@ export default function UserManagement() {
   );
 
   return (
-    <div className="flex-1 bg-gray-900 p-6 text-white">
-      <h1 className="text-2xl font-bold mb-4">User Management</h1>
+    <div className="flex-1 min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 p-6">
+      <div className="max-w-7xl mx-auto">
+      <h1 className="text-3xl font-bold mb-6 text-white">User Management</h1>
 
-      <button
-        onClick={openAddModal}
-        className="bg-green-600 px-4 py-2 rounded hover:bg-green-700 mb-4"
-      >
-        <FaPlus className="inline mr-2" /> Add User
+      <button onClick={openAddModal} className="bg-amber-500 text-slate-900 px-4 py-2 rounded-lg font-medium hover:bg-amber-400 mb-6 flex items-center gap-2">
+        <FaPlus /> Add User
       </button>
 
-      <div className="mb-6 flex flex-col md:flex-row md:items-center gap-4">
+      <div className="mb-6 flex flex-wrap gap-4 items-end">
         <div>
-          <label className="block mb-1">User Type:</label>
+          <label className="block text-sm text-slate-400 mb-1">User Type:</label>
           <select
-            className="px-3 py-2 rounded border border-gray-300 text-white bg-gray-700"
+            className="px-3 py-2 rounded-lg border border-slate-600 text-white bg-slate-700/50 focus:ring-2 focus:ring-amber-500"
             value={selectedTypeId}
             onChange={(e) =>
               setSelectedTypeId(e.target.value ? Number(e.target.value) : '')
@@ -160,9 +158,9 @@ export default function UserManagement() {
         </div>
 
         <div>
-          <label className="block mb-1">Status:</label>
-          <div className="flex items-center gap-4">
-            <label className="flex items-center gap-1">
+          <label className="block text-sm text-slate-400 mb-1">Status:</label>
+          <div className="flex items-center gap-4 text-slate-300">
+            <label className="flex items-center gap-1 cursor-pointer">
               <input
                 type="radio"
                 name="status"
@@ -172,7 +170,7 @@ export default function UserManagement() {
               />
               All
             </label>
-            <label className="flex items-center gap-1">
+            <label className="flex items-center gap-1 cursor-pointer">
               <input
                 type="radio"
                 name="status"
@@ -182,7 +180,7 @@ export default function UserManagement() {
               />
               Active
             </label>
-            <label className="flex items-center gap-1">
+            <label className="flex items-center gap-1 cursor-pointer">
               <input
                 type="radio"
                 name="status"
@@ -195,33 +193,22 @@ export default function UserManagement() {
           </div>
         </div>
 
-        <button
-          onClick={handleFilter}
-          className="bg-purple-600 px-4 py-2 rounded hover:bg-purple-700"
-        >
+        <button onClick={handleFilter} className="bg-amber-500 text-slate-900 px-4 py-2 rounded-lg font-medium hover:bg-amber-400">
           Filter
         </button>
       </div>
 
-      <div className="mb-6">
+      <div className="mb-6 max-w-md">
         <div className="relative">
-          <div className="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
-            <FaSearch className="w-4 h-4 text-gray-400" />
-          </div>
-          <input
-            type="search"
-            className="block w-full p-4 ps-10 text-sm text-gray-900 rounded-lg bg-gray-50 focus:ring-purple-500 focus:border-purple-500"
-            placeholder="Search by name..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-          />
+          <FaSearch className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
+          <input type="search" className="block w-full p-4 pl-10 text-sm text-white rounded-lg bg-slate-700/50 border border-slate-600 placeholder-slate-500 focus:ring-2 focus:ring-amber-500" placeholder="Search by name..." value={search} onChange={(e) => setSearch(e.target.value)} />
         </div>
-        
       </div>
 
-      <div className="overflow-x-auto">
-        <table className="w-full text-sm text-left text-gray-300">
-          <thead className="text-xs uppercase bg-gray-700">
+      <div className="backdrop-blur-sm bg-slate-800/50 rounded-2xl border border-slate-700/50 shadow-xl overflow-hidden">
+        <div className="overflow-x-auto">
+        <table className="w-full text-sm text-left">
+          <thead className="text-xs uppercase bg-slate-700/50 text-slate-300">
             <tr>
               <th className="px-6 py-3">Name</th>
               <th className="px-6 py-3">Email</th>
@@ -233,29 +220,28 @@ export default function UserManagement() {
           </thead>
           <tbody>
             {filteredUsers.map((user) => (
-              <tr
-                key={user.id}
-                className="bg-gray-800 border-b border-gray-700"
-              >
-                <td className="px-6 py-4">
+              <tr key={user.id} className="border-b border-slate-700/50 hover:bg-slate-700/30 transition-colors">
+                <td className="px-6 py-4 text-white font-medium">
                   {user.firstName} {user.lastName}
                 </td>
-                <td className="px-6 py-4">{user.email}</td>
-                <td className="px-6 py-4">{user.contactNumber}</td>
-                <td className="px-6 py-4">{user.type?.name}</td>
+                <td className="px-6 py-4 text-slate-200">{user.email}</td>
+                <td className="px-6 py-4 text-slate-200">{user.contactNumber}</td>
+                <td className="px-6 py-4 text-slate-200">{user.type?.name}</td>
                 <td className="px-6 py-4">
-                  {user.deleteStatus ? 'Deleted' : 'Active'}
+                  <span className={user.deleteStatus ? "text-rose-400" : "text-emerald-400"}>
+                    {user.deleteStatus ? 'Deleted' : 'Active'}
+                  </span>
                 </td>
                 <td className="px-6 py-4 flex gap-2">
                   <button
                     onClick={() => openEditModal(user)}
-                    className="text-blue-400 hover:text-blue-600"
+                    className="text-amber-400 hover:text-amber-300"
                   >
                     <FaEdit />
                   </button>
                   <button
                     onClick={() => handleDeleteUser(user.id)}
-                    className="text-red-400 hover:text-red-600"
+                    className="text-rose-400 hover:text-rose-300"
                   >
                     <FaTrash />
                   </button>
@@ -263,14 +249,12 @@ export default function UserManagement() {
               </tr>
             ))}
             {filteredUsers.length === 0 && (
-              <tr>
-                <td colSpan={6} className="text-center py-4 text-gray-400">
-                  No users found.
-                </td>
-              </tr>
+              <tr><td colSpan={6} className="text-center py-12 text-slate-500">No users found.</td></tr>
             )}
           </tbody>
         </table>
+        </div>
+      </div>
       </div>
 
       <Dialog
@@ -279,8 +263,8 @@ export default function UserManagement() {
         className="fixed inset-0 z-50 overflow-y-auto"
       >
         <div className="flex items-center justify-center min-h-screen px-4">
-          <Dialog.Panel className="bg-white text-black p-6 rounded shadow-lg w-full max-w-md">
-            <Dialog.Title className="text-lg font-bold mb-4">
+          <Dialog.Panel className="bg-slate-800 border border-slate-700 text-white p-6 rounded-2xl shadow-xl w-full max-w-md">
+            <Dialog.Title className="text-lg font-bold mb-4 text-white">
               {modalUser ? 'Edit User' : 'Add User'}
             </Dialog.Title>
             <div className="space-y-3">
@@ -291,81 +275,17 @@ export default function UserManagement() {
                 onChange={(e) =>
                   setFormData({ ...formData, email: e.target.value })
                 }
-                className="w-full border rounded px-3 py-2"
+                className="w-full border border-slate-600 rounded-lg px-3 py-2 bg-slate-700/50 text-white placeholder-slate-400"
               />
-              <input
-                type="text"
-                placeholder="First Name"
-                value={formData.firstName}
-                onChange={(e) =>
-                  setFormData({ ...formData, firstName: e.target.value })
-                }
-                className="w-full border rounded px-3 py-2"
-              />
-              <input
-                type="text"
-                placeholder="Last Name"
-                value={formData.lastName}
-                onChange={(e) =>
-                  setFormData({ ...formData, lastName: e.target.value })
-                }
-                className="w-full border rounded px-3 py-2"
-              />
-              <input
-                type="text"
-                placeholder="Contact Number"
-                value={formData.contactNumber}
-                onChange={(e) =>
-                  setFormData({ ...formData, contactNumber: e.target.value })
-                }
-                className="w-full border rounded px-3 py-2"
-              />
-              <input
-                type="text"
-                placeholder="Address"
-                value={formData.address}
-                onChange={(e) =>
-                  setFormData({ ...formData, address: e.target.value })
-                }
-                className="w-full border rounded px-3 py-2"
-              />
-              <input
-                type="text"
-                placeholder="City"
-                value={formData.city}
-                onChange={(e) =>
-                  setFormData({ ...formData, city: e.target.value })
-                }
-                className="w-full border rounded px-3 py-2"
-              />
-              <input
-                type="text"
-                placeholder="District"
-                value={formData.district}
-                onChange={(e) =>
-                  setFormData({ ...formData, district: e.target.value })
-                }
-                className="w-full border rounded px-3 py-2"
-              />
+              <input type="text" placeholder="First Name" value={formData.firstName} onChange={(e) => setFormData({ ...formData, firstName: e.target.value })} className="w-full border border-slate-600 rounded-lg px-3 py-2 bg-slate-700/50 text-white placeholder-slate-400" />
+              <input type="text" placeholder="Last Name" value={formData.lastName} onChange={(e) => setFormData({ ...formData, lastName: e.target.value })} className="w-full border border-slate-600 rounded-lg px-3 py-2 bg-slate-700/50 text-white placeholder-slate-400" />
+              <input type="text" placeholder="Contact Number" value={formData.contactNumber} onChange={(e) => setFormData({ ...formData, contactNumber: e.target.value })} className="w-full border border-slate-600 rounded-lg px-3 py-2 bg-slate-700/50 text-white placeholder-slate-400" />
+              <input type="text" placeholder="Address" value={formData.address} onChange={(e) => setFormData({ ...formData, address: e.target.value })} className="w-full border border-slate-600 rounded-lg px-3 py-2 bg-slate-700/50 text-white placeholder-slate-400" />
+              <input type="text" placeholder="City" value={formData.city} onChange={(e) => setFormData({ ...formData, city: e.target.value })} className="w-full border border-slate-600 rounded-lg px-3 py-2 bg-slate-700/50 text-white placeholder-slate-400" />
+              <input type="text" placeholder="District" value={formData.district} onChange={(e) => setFormData({ ...formData, district: e.target.value })} className="w-full border border-slate-600 rounded-lg px-3 py-2 bg-slate-700/50 text-white placeholder-slate-400" />
               {/* password */}
-              {modalUser ? <></> : (
-                <input
-                  type="password"
-                  placeholder="Password"
-                  value={formData.password}
-                  onChange={(e) =>
-                  setFormData({ ...formData, password: e.target.value })
-                }
-                className="w-full border rounded px-3 py-2"
-              />
-              )}
-              <select
-                value={formData.typeId}
-                onChange={(e) =>
-                  setFormData({ ...formData, typeId: e.target.value })
-                }
-                className="w-full border rounded px-3 py-2"
-              >
+              {!modalUser && <input type="password" placeholder="Password" value={formData.password} onChange={(e) => setFormData({ ...formData, password: e.target.value })} className="w-full border border-slate-600 rounded-lg px-3 py-2 bg-slate-700/50 text-white placeholder-slate-400" />}
+              <select value={formData.typeId} onChange={(e) => setFormData({ ...formData, typeId: e.target.value })} className="w-full border border-slate-600 rounded-lg px-3 py-2 bg-slate-700/50 text-white">
                 <option value="">Select User Type</option>
                 {userTypes.map((type) => (
                   <option key={type.id} value={type.id}>
@@ -375,18 +295,8 @@ export default function UserManagement() {
               </select>
             </div>
             <div className="mt-4 flex justify-end gap-2">
-              <button
-                onClick={() => setIsModalOpen(false)}
-                className="bg-gray-400 px-4 py-2 rounded hover:bg-gray-500 text-white"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={handleFormSubmit}
-                className="bg-blue-600 px-4 py-2 rounded hover:bg-blue-700 text-white"
-              >
-                {modalUser ? 'Update' : 'Add'}
-              </button>
+              <button onClick={() => setIsModalOpen(false)} className="px-4 py-2 bg-slate-600 text-white rounded-lg hover:bg-slate-500">Cancel</button>
+              <button onClick={handleFormSubmit} className="px-4 py-2 bg-amber-500 text-slate-900 rounded-lg font-medium hover:bg-amber-400">{modalUser ? 'Update' : 'Add'}</button>
             </div>
           </Dialog.Panel>
         </div>
