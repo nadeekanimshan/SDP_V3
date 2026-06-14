@@ -25,30 +25,45 @@ const getEventById = async (req: Request, res: Response, next: NextFunction) => 
     }
   };
   
+// Reusable date/time validation helper
+const validateEventDateTime = (startDate: string, time: string | undefined): string | null => {
+  const now = new Date();
+
+  // Today as local YYYY-MM-DD string
+  const todayStr = now.getFullYear() + '-' +
+    String(now.getMonth() + 1).padStart(2, '0') + '-' +
+    String(now.getDate()).padStart(2, '0');
+
+  const selectedDateStr = new Date(startDate).toISOString().slice(0, 10);
+
+  if (selectedDateStr < todayStr) {
+    return "Cannot create event with a past date.";
+  }
+
+  if (selectedDateStr === todayStr && time) {
+    // time is stored as "1970-01-01T{HH:MM}:00.000Z" — extract HH:MM from UTC
+    const timeStr = time.includes('T') ? time.slice(11, 16) : time;
+    const [hours, minutes] = timeStr.split(':').map(Number);
+    const selectedMinutes = hours * 60 + minutes;
+    const nowMinutes = now.getHours() * 60 + now.getMinutes();
+
+    if (selectedMinutes <= nowMinutes) {
+      return "Cannot create event with a past or current time for today.";
+    }
+  }
+
+  return null;
+};
+
   const createEvent = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      // Validate past date and time
       const { startDate, time } = req.body;
-      
-      if (startDate) {
-        const selectedDate = new Date(startDate);
-        const today = new Date();
-        today.setHours(0, 0, 0, 0);
-        
-        if (selectedDate < today) {
-          res.status(400).json({ message: "Cannot create event with a past date" });
-          return;
-        }
 
-        // If date is today and time is provided, check if time is in the past
-        if (selectedDate.getTime() === today.getTime() && time) {
-          const eventTime = new Date(time);
-          const now = new Date();
-          
-          if (eventTime < now) {
-            res.status(400).json({ message: "Cannot create event with a past time for today" });
-            return;
-          }
+      if (startDate) {
+        const error = validateEventDateTime(startDate, time);
+        if (error) {
+          res.status(400).json({ message: error });
+          return;
         }
       }
 
@@ -61,28 +76,13 @@ const getEventById = async (req: Request, res: Response, next: NextFunction) => 
   
   const updateEvent = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      // Validate past date and time
       const { startDate, time } = req.body;
-      
-      if (startDate) {
-        const selectedDate = new Date(startDate);
-        const today = new Date();
-        today.setHours(0, 0, 0, 0);
-        
-        if (selectedDate < today) {
-          res.status(400).json({ message: "Cannot update event with a past date" });
-          return;
-        }
 
-        // If date is today and time is provided, check if time is in the past
-        if (selectedDate.getTime() === today.getTime() && time) {
-          const eventTime = new Date(time);
-          const now = new Date();
-          
-          if (eventTime < now) {
-            res.status(400).json({ message: "Cannot update event with a past time for today" });
-            return;
-          }
+      if (startDate) {
+        const error = validateEventDateTime(startDate, time);
+        if (error) {
+          res.status(400).json({ message: error });
+          return;
         }
       }
 

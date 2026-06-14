@@ -73,9 +73,8 @@ export default function AppoimentPayment() {
     }
 
     try {
-      const userId = localStorage.getItem("id"); // logged in user id
       const data = {
-        user_id: Number(userId),
+        user_id: selectedPayment.user_id, // use the appointment owner's user_id
         amount: parseFloat(amount),
         note: note || null,
         status: "done",

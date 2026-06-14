@@ -87,6 +87,56 @@ const deleteUser=async(id:number)=>{
     return deletedUser
 }
 
+const permanentDeleteUser = async (id: number) => {
+    // Delete all related records in correct order (children before parents)
+    await prisma.$transaction(async (tx) => {
+        // 1. Get all class_student ids for this user
+        const classStudents = await tx.class_Student.findMany({
+            where: { student_id: id },
+            select: { id: true }
+        });
+        const classStudentIds = classStudents.map(cs => cs.id);
+
+        // 2. Delete class installments
+        if (classStudentIds.length > 0) {
+            await tx.class_Installment.deleteMany({
+                where: { class_student_id: { in: classStudentIds } }
+            });
+        }
+
+        // 3. Delete class_students
+        await tx.class_Student.deleteMany({ where: { student_id: id } });
+
+        // 4. Get all appointment detail ids for this user
+        const appointmentDetails = await tx.vocalRecordingAppointmentDetail.findMany({
+            where: { user_id: id },
+            select: { id: true }
+        });
+        const appointmentDetailIds = appointmentDetails.map(a => a.id);
+
+        // 5. Delete payments linked to those appointments
+        if (appointmentDetailIds.length > 0) {
+            await tx.payment.deleteMany({
+                where: { appointment_id: { in: appointmentDetailIds } }
+            });
+        }
+
+        // 6. Delete payments directly linked to user (not via appointment)
+        await tx.payment.deleteMany({ where: { user_id: id } });
+
+        // 7. Delete vocal recording appointment details
+        await tx.vocalRecordingAppointmentDetail.deleteMany({ where: { user_id: id } });
+
+        // 8. Delete attendance records
+        await tx.attendance.deleteMany({ where: { user_id: id } });
+
+        // 9. Finally delete the user
+        await tx.user.delete({ where: { id } });
+    });
+
+    return true;
+}
+
 const getUserByEmail=async(email:string)=>{
     const user=await prisma.user.findUnique({
         where:{
@@ -193,6 +243,7 @@ const UserService={
     getAllUser,
     updateUser,
     deleteUser,
+    permanentDeleteUser,
     getUserByEmail,
     getUserTypes,
     getStudentInRegisteredMonths

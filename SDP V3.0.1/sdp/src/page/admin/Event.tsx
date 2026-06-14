@@ -50,26 +50,34 @@ export default function Event() {
             return;
         }
 
-        // Validate past date and time
-        const selectedDate = new Date(formData.startDate);
-        const today = new Date();
-        today.setHours(0, 0, 0, 0);
-        
-        if (selectedDate < today) {
-            alert("Cannot create event with a past date");
+        const now = new Date();
+
+        // Get today's date string in local time (YYYY-MM-DD)
+        const todayStr = now.getFullYear() + '-' +
+            String(now.getMonth() + 1).padStart(2, '0') + '-' +
+            String(now.getDate()).padStart(2, '0');
+
+        const selectedDateStr = formData.startDate.slice(0, 10); // "YYYY-MM-DD"
+
+        // Reject past dates
+        if (selectedDateStr < todayStr) {
+            alert("Cannot create event with a past date.");
             return;
         }
 
-        // If the date is today, check if the time is in the past
-        if (selectedDate.getTime() === today.getTime()) {
-            const timeValue = formData.time.includes('T') ? formData.time.slice(11, 16) : formData.time;
+        // If date is today, check the time
+        if (selectedDateStr === todayStr) {
+            // Extract HH:MM from the time value
+            const timeValue = formData.time.includes('T')
+                ? formData.time.slice(11, 16)   // ISO: "1970-01-01T14:03:00.000Z"
+                : formData.time;                // Plain: "14:03"
+
             const [hours, minutes] = timeValue.split(':').map(Number);
-            const now = new Date();
-            const selectedDateTime = new Date();
-            selectedDateTime.setHours(hours, minutes, 0, 0);
-            
-            if (selectedDateTime < now) {
-                alert("Cannot create event with a past time for today");
+            const selectedMinutes = hours * 60 + minutes;
+            const nowMinutes = now.getHours() * 60 + now.getMinutes();
+
+            if (selectedMinutes <= nowMinutes) {
+                alert("Cannot create event with a past or current time for today.");
                 return;
             }
         }

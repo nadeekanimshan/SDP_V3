@@ -121,6 +121,20 @@ const deleteUser=async(req:Request,res:Response,next:NextFunction)=>{
     }
 }
 
+const permanentDeleteUser=async(req:Request,res:Response,next:NextFunction)=>{
+    try {
+        const {id}=req.params
+        if(!id){
+             res.status(400).json({message:"Id is required"});
+             return;
+        }
+        await UserService.permanentDeleteUser(Number(id));
+        res.status(200).json({message:"User permanently deleted"});
+    } catch (error) {
+        next(error)
+    }
+}
+
 const getUserByEmail=async(req:Request,res:Response,next:NextFunction)=>{
     try {
         const {email}=req.params
@@ -182,6 +196,7 @@ const UserController={
     getAllUser,
     updateUser,
     deleteUser,
+    permanentDeleteUser,
     getUserByEmail,
     getUserTypes,
     getStudentInRegisterdThisMonth

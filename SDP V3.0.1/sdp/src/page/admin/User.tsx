@@ -116,10 +116,29 @@ export default function UserManagement() {
     fetchUsers();
   };
 
-  const handleDeleteUser = async (userId: number) => {
-    if (confirm('Are you sure you want to delete this user?')) {
-      await UseAxios(`users/${userId}`, "DELETE");
+  const handleRestoreUser = async (userId: number) => {
+    try {
+      await UseAxios(`users/${userId}`, "PUT", { deleteStatus: false });
+      setIsModalOpen(false);
       fetchUsers();
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const handleDeleteUser = async (user: User) => {
+    if (user.deleteStatus) {
+      // Already soft-deleted → permanently delete
+      if (confirm(`Permanently delete ${user.firstName} ${user.lastName}? This cannot be undone.`)) {
+        await UseAxios(`users/${user.id}/permanent`, "DELETE");
+        fetchUsers();
+      }
+    } else {
+      // Active → soft delete
+      if (confirm(`Delete ${user.firstName} ${user.lastName}?`)) {
+        await UseAxios(`users/${user.id}`, "DELETE");
+        fetchUsers();
+      }
     }
   };
 
@@ -240,8 +259,9 @@ export default function UserManagement() {
                     <FaEdit />
                   </button>
                   <button
-                    onClick={() => handleDeleteUser(user.id)}
+                    onClick={() => handleDeleteUser(user)}
                     className="text-rose-400 hover:text-rose-300"
+                    title={user.deleteStatus ? "Permanently Delete" : "Delete"}
                   >
                     <FaTrash />
                   </button>
@@ -294,9 +314,22 @@ export default function UserManagement() {
                 ))}
               </select>
             </div>
-            <div className="mt-4 flex justify-end gap-2">
-              <button onClick={() => setIsModalOpen(false)} className="px-4 py-2 bg-slate-600 text-white rounded-lg hover:bg-slate-500">Cancel</button>
-              <button onClick={handleFormSubmit} className="px-4 py-2 bg-amber-500 text-slate-900 rounded-lg font-medium hover:bg-amber-400">{modalUser ? 'Update' : 'Add'}</button>
+            <div className="mt-4 flex justify-between items-center gap-2">
+              <div>
+                {/* Show restore button only for deleted users in edit mode */}
+                {modalUser?.deleteStatus && (
+                  <button
+                    onClick={() => handleRestoreUser(modalUser.id)}
+                    className="px-4 py-2 bg-emerald-600 text-white rounded-lg font-medium hover:bg-emerald-500 flex items-center gap-2"
+                  >
+                    ↩ Restore to Active
+                  </button>
+                )}
+              </div>
+              <div className="flex gap-2">
+                <button onClick={() => setIsModalOpen(false)} className="px-4 py-2 bg-slate-600 text-white rounded-lg hover:bg-slate-500">Cancel</button>
+                <button onClick={handleFormSubmit} className="px-4 py-2 bg-amber-500 text-slate-900 rounded-lg font-medium hover:bg-amber-400">{modalUser ? 'Update' : 'Add'}</button>
+              </div>
             </div>
           </Dialog.Panel>
         </div>

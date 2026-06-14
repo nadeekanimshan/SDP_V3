@@ -4,15 +4,15 @@ const bcrypt = require('bcrypt')
 
 const users = [
     {
-        email: "john@gmail.com",
-        first_name: "john",
-        last_name: "doe",
+        email: "chathura.herath@gmail.com",
+        first_name: "Chathura",
+        last_name: "Herath",
         password: "admin1234",
         type: UserType.ADMIN,
-        contact_number: "1234567890",
+        contact_number: "0771234567",
         address: "Colombo",
         city: "Colombo",
-        district: "Colombo",
+        district: "Western",
         created_at: new Date(),
         updated_at: new Date(),
         deleteStatus: false
