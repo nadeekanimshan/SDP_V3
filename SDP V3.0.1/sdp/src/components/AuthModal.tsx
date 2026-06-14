@@ -20,6 +20,11 @@ type User = {
   type_id?: number;
 };
 
+type ValidationErrors = {
+  email?: string;
+  contact_number?: string;
+};
+
 type RegisterResponse={
     id:number,
     email:string,
@@ -46,10 +51,67 @@ export default function AuthModal() {
     type_id: 2
   });
   const [isLoading, setIsLoading] = useState(false);
+  const [errors, setErrors] = useState<ValidationErrors>({});
+
+  // Email validation function
+  const validateEmail = (email: string): boolean => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
+
+  // Phone number validation function
+  const validatePhone = (phone: string): boolean => {
+    const phoneRegex = /^\d{10}$/;
+    return phoneRegex.test(phone);
+  };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setUser(prev => ({ ...prev, [name]: value }));
+
+    // Real-time validation - clear errors when user enters valid data
+    if (name === 'email') {
+      if (value.length === 0) {
+        // Don't show error for empty field while typing
+        setErrors(prev => ({ ...prev, email: undefined }));
+      } else if (validateEmail(value)) {
+        // Clear error when email is valid
+        setErrors(prev => ({ ...prev, email: undefined }));
+      } else {
+        // Show error only after user has typed something
+        setErrors(prev => ({ ...prev, email: 'Please enter a valid email address.' }));
+      }
+    }
+
+    if (name === 'contact_number') {
+      if (value.length === 0) {
+        // Don't show error for empty field while typing
+        setErrors(prev => ({ ...prev, contact_number: undefined }));
+      } else if (validatePhone(value)) {
+        // Clear error when phone is valid
+        setErrors(prev => ({ ...prev, contact_number: undefined }));
+      } else {
+        // Show error only after user has typed something
+        setErrors(prev => ({ ...prev, contact_number: 'Phone number must contain exactly 10 digits.' }));
+      }
+    }
+  };
+
+  // Validate on blur for better UX
+  const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+
+    if (name === 'email' && value.length > 0) {
+      if (!validateEmail(value)) {
+        setErrors(prev => ({ ...prev, email: 'Please enter a valid email address.' }));
+      }
+    }
+
+    if (name === 'contact_number' && value.length > 0) {
+      if (!validatePhone(value)) {
+        setErrors(prev => ({ ...prev, contact_number: 'Phone number must contain exactly 10 digits.' }));
+      }
+    }
   };
 
   const getTypeId = async (type: string):Promise<number> => {
@@ -61,6 +123,28 @@ export default function AuthModal() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Validate form before submission
+    const newErrors: ValidationErrors = {};
+
+    // Email validation
+    if (!validateEmail(user.email)) {
+      newErrors.email = 'Please enter a valid email address.';
+    }
+
+    // Phone validation (only for registration)
+    if (!isLogin && user.contact_number) {
+      if (!validatePhone(user.contact_number)) {
+        newErrors.contact_number = 'Phone number must contain exactly 10 digits.';
+      }
+    }
+
+    // If there are errors, don't submit
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
+      return;
+    }
+
     setIsLoading(true);
 
     try {
@@ -176,13 +260,23 @@ export default function AuthModal() {
           <div>
             <label className="block text-sm font-medium text-gray-700">Email</label>
             <input
-              type="email"
+              type="text"
               name="email"
               value={user.email}
               onChange={handleChange}
-              className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
+              onBlur={handleBlur}
+              className={`mt-1 block w-full border rounded-md shadow-sm p-2 transition-colors ${
+                errors.email ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : 'border-gray-300 focus:ring-gray-500 focus:border-gray-500'
+              }`}
+              placeholder="example@email.com"
+              autoComplete="email"
               required
             />
+            {errors.email && (
+              <p className="mt-1 text-sm text-red-600 flex items-center gap-1">
+                <span>⚠</span> {errors.email}
+              </p>
+            )}
           </div>
 
           <div>
@@ -207,9 +301,22 @@ export default function AuthModal() {
                   name="contact_number"
                   value={user.contact_number}
                   onChange={handleChange}
-                  className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
+                  onBlur={handleBlur}
+                  className={`mt-1 block w-full border rounded-md shadow-sm p-2 transition-colors ${
+                    errors.contact_number ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : 'border-gray-300 focus:ring-gray-500 focus:border-gray-500'
+                  }`}
+                  placeholder="0771234567"
+                  maxLength={10}
+                  pattern="\d{10}"
+                  title="Phone number must contain exactly 10 digits"
                   required
                 />
+                {errors.contact_number && (
+                  <p className="mt-1 text-sm text-red-600 flex items-center gap-1">
+                    <span>⚠</span> {errors.contact_number}
+                  </p>
+                )}
+                <p className="mt-1 text-xs text-gray-500">Enter 10 digit phone number</p>
               </div>
 
               <div>
@@ -273,7 +380,10 @@ export default function AuthModal() {
 
         <div className="mt-4 text-center">
           <button
-            onClick={() => setIsLogin(!isLogin)}
+            onClick={() => {
+              setIsLogin(!isLogin);
+              setErrors({});
+            }}
             className="text-sm text-gray-600 hover:text-gray-800"
           >
             {isLogin ? 'Need an account? Register' : 'Already have an account? Login'}

@@ -27,6 +27,31 @@ const getEventById = async (req: Request, res: Response, next: NextFunction) => 
   
   const createEvent = async (req: Request, res: Response, next: NextFunction) => {
     try {
+      // Validate past date and time
+      const { startDate, time } = req.body;
+      
+      if (startDate) {
+        const selectedDate = new Date(startDate);
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        
+        if (selectedDate < today) {
+          res.status(400).json({ message: "Cannot create event with a past date" });
+          return;
+        }
+
+        // If date is today and time is provided, check if time is in the past
+        if (selectedDate.getTime() === today.getTime() && time) {
+          const eventTime = new Date(time);
+          const now = new Date();
+          
+          if (eventTime < now) {
+            res.status(400).json({ message: "Cannot create event with a past time for today" });
+            return;
+          }
+        }
+      }
+
       const newEvent = await EventService.createEvent(req.body);
       res.status(201).json(newEvent);
     } catch (error) {
@@ -36,6 +61,31 @@ const getEventById = async (req: Request, res: Response, next: NextFunction) => 
   
   const updateEvent = async (req: Request, res: Response, next: NextFunction) => {
     try {
+      // Validate past date and time
+      const { startDate, time } = req.body;
+      
+      if (startDate) {
+        const selectedDate = new Date(startDate);
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        
+        if (selectedDate < today) {
+          res.status(400).json({ message: "Cannot update event with a past date" });
+          return;
+        }
+
+        // If date is today and time is provided, check if time is in the past
+        if (selectedDate.getTime() === today.getTime() && time) {
+          const eventTime = new Date(time);
+          const now = new Date();
+          
+          if (eventTime < now) {
+            res.status(400).json({ message: "Cannot update event with a past time for today" });
+            return;
+          }
+        }
+      }
+
       const updatedEvent = await EventService.updateEvent(Number(req.params.id), req.body);
       if (!updatedEvent) {
         res.status(404).json({ message: "Event not found" });

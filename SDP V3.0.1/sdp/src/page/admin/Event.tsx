@@ -42,12 +42,36 @@ export default function Event() {
         }
     };
 
-    const handleSubmit = async (e : any) => {
+    const handleSubmit = async (e : any) => { //  Event Data send to backend 
         e.preventDefault();
         // Basic validation
         if (!formData.title || !formData.startDate || !formData.time) {
             alert("Please fill required fields (Title, Start Date, Time)");
             return;
+        }
+
+        // Validate past date and time
+        const selectedDate = new Date(formData.startDate);
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        
+        if (selectedDate < today) {
+            alert("Cannot create event with a past date");
+            return;
+        }
+
+        // If the date is today, check if the time is in the past
+        if (selectedDate.getTime() === today.getTime()) {
+            const timeValue = formData.time.includes('T') ? formData.time.slice(11, 16) : formData.time;
+            const [hours, minutes] = timeValue.split(':').map(Number);
+            const now = new Date();
+            const selectedDateTime = new Date();
+            selectedDateTime.setHours(hours, minutes, 0, 0);
+            
+            if (selectedDateTime < now) {
+                alert("Cannot create event with a past time for today");
+                return;
+            }
         }
 
         try {
@@ -59,8 +83,10 @@ export default function Event() {
             setShowModal(false);
             fetchEvents();
             resetForm();
-        } catch (err) {
+        } catch (err: any) {
             console.error(err);
+            const errorMessage = err.response?.data?.message || "Failed to save event";
+            alert(errorMessage);
         }
     };
 
@@ -170,7 +196,15 @@ export default function Event() {
                             </div>
                             <div>
                                 <label className="block text-sm font-medium text-slate-300 mb-1">Start Date *</label>
-                                <input type="date" className="w-full border border-slate-600 rounded-lg px-3 py-2 bg-slate-700/50 text-white focus:ring-2 focus:ring-amber-500" value={formData.startDate?.slice(0, 10) || ""} onChange={(e) => setFormData({ ...formData, startDate: e.target.value })} required />
+                                <input 
+                                    type="date" 
+                                    className="w-full border border-slate-600 rounded-lg px-3 py-2 bg-slate-700/50 text-white focus:ring-2 focus:ring-amber-500" 
+                                    value={formData.startDate?.slice(0, 10) || ""} 
+                                    onChange={(e) => setFormData({ ...formData, startDate: e.target.value })} 
+                                    min={new Date().toISOString().split('T')[0]}
+                                    required 
+                                />
+                                <p className="text-xs text-slate-400 mt-1">Cannot select past dates</p>
                             </div>
                             <div>
                                 <label className="block text-sm font-medium text-slate-300 mb-1">Time *</label>

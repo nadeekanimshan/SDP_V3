@@ -9,6 +9,14 @@ const login=async(req:Request,res:Response,next:NextFunction)=>{
             res.status(400).json({message:"Email and password are required"})
             return;
         }
+
+        // Email validation
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email)) {
+            res.status(400).json({message:"Please enter a valid email address."})
+            return;
+        }
+
         const result=await AuthService.login(email,password)
         res.status(200).json(result)
     } catch (error) {
@@ -24,6 +32,21 @@ const register=async(req:Request,res:Response,next:NextFunction)=>{
             res.status(400).json({message:"All fields are required"})
             return;
         }
+
+        // Email validation
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email)) {
+            res.status(400).json({message:"Please enter a valid email address."})
+            return;
+        }
+
+        // Phone number validation
+        const phoneRegex = /^\d{10}$/;
+        if (!phoneRegex.test(contact_number)) {
+            res.status(400).json({message:"Phone number must contain exactly 10 digits."})
+            return;
+        }
+
         const result=await AuthService.register({email,password,first_name,last_name,contact_number,address,city,district,type_id})
         res.status(200).json(result)
     } catch (error) {

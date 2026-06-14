@@ -20,7 +20,7 @@ app.use(express.json());
 app.use(cors());
 
 app.use(authenticate);
-app.use("/api/events", EventRouters);
+app.use("/api/events", EventRouters); //
 app.use("/api/classes", ClassRouters);
 app.use("/api/appointments", AppointmentRouter);
 app.use("/api/auth", AuthRouter);
