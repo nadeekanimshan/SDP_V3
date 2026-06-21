@@ -288,8 +288,9 @@ export default function VocalRecordingAppointment() {
     } catch (error: any) {
       console.error("Booking failed", error);
       
-      // Show specific error message from backend
-      if (error?.response?.data?.message) {
+      if (error?.response?.status === 409) {
+        toast.error("This time slot is already booked. Please choose a different time.", { autoClose: 5000 });
+      } else if (error?.response?.data?.message) {
         toast.error(error.response.data.message);
       } else if (error?.response?.status === 422) {
         toast.error("Database not set up. Please run: npm run db:push in backend");

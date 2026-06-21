@@ -63,6 +63,26 @@ export default function AppointmentManagement() {
   const [isLoading, setIsLoading] = useState(false);
   const [reasonModal, setReasonModal] = useState<{ open: boolean; item: AppointmentItem | null }>({ open: false, item: null });
   const [rejectModal, setRejectModal] = useState<{ open: boolean; item: AppointmentItem | null; reason: string; type: "appointment" | "cancel" }>({ open: false, item: null, reason: "", type: "appointment" });
+  const [payModal, setPayModal] = useState<{ open: boolean; item: AppointmentItem | null; fullAmount: string; paidAmount: string; paymentType: string; note: string; loading: boolean; previousPayments: any[] }>({ open: false, item: null, fullAmount: "", paidAmount: "", paymentType: "", note: "", loading: false, previousPayments: [] });
+  const [paymentStatuses, setPaymentStatuses] = useState<Record<number, string>>({});
+
+  const fetchPaymentStatuses = useCallback(async (items: AppointmentItem[]) => {
+    const statusMap: Record<number, string> = {};
+    await Promise.all(
+      items.map(async (item) => {
+        try {
+          const res = await UseAxios(`appointments/payment/${item.id}`, "GET");
+          const payments: any[] = Array.isArray(res?.data) ? res.data : [];
+          if (payments.length > 0) {
+            statusMap[item.id] = payments[payments.length - 1].status ?? "done";
+          }
+        } catch {
+          // no payment — leave undefined
+        }
+      })
+    );
+    setPaymentStatuses(statusMap);
+  }, []);
 
   const fetchAppointments = useCallback(async () => {
     setIsLoading(true);
@@ -74,6 +94,7 @@ export default function AppointmentManagement() {
         const res = await UseAxios("appointments/list/all", "GET", undefined, params);
         const data = res?.data ?? res;
         setAppointments(Array.isArray(data) ? data : []);
+        fetchPaymentStatuses(Array.isArray(data) ? data : []);
       } else {
         const date = selectedDate || format(new Date(), "yyyy-MM-dd");
         const res = await UseAxios(`appointments/all/${date}`, "GET");
@@ -84,6 +105,7 @@ export default function AppointmentManagement() {
           appointment: data?.appointment ?? { id: 0, date, status: "", note: null },
         }));
         setAppointments(items);
+        fetchPaymentStatuses(items);
       }
     } catch (err) {
       console.error("Failed to fetch appointments:", err);
@@ -91,7 +113,7 @@ export default function AppointmentManagement() {
     } finally {
       setIsLoading(false);
     }
-  }, [listAllMode, selectedDate, selectedStatus]);
+  }, [listAllMode, selectedDate, selectedStatus, fetchPaymentStatuses]);
 
   useEffect(() => {
     if (!listAllMode && !selectedDate) {
@@ -288,6 +310,7 @@ export default function AppointmentManagement() {
                         )}
                       </td>
                       <td className="px-6 py-4">
+                        <div className="flex items-center gap-2">
                         {detail.cancelRequested ? (
                           <div className="flex gap-2">
                             <button
@@ -328,6 +351,42 @@ export default function AppointmentManagement() {
                             <option value="accepted">Accept</option>
                           </select>
                         )}
+                        <button
+                          onClick={async () => {
+                            if (paymentStatuses[detail.id] === "done") return;
+                            // Fetch previous payments if partially paid
+                            let previousPayments: any[] = [];
+                            let savedFullAmount = "";
+                            if (paymentStatuses[detail.id] === "partially_done") {
+                              try {
+                                const res = await UseAxios(`appointments/payment/${detail.id}`, "GET");
+                                previousPayments = Array.isArray(res?.data) ? res.data : [];
+                                // Get fullAmount from the first payment record
+                                if (previousPayments.length > 0 && previousPayments[0].fullAmount) {
+                                  savedFullAmount = previousPayments[0].fullAmount.toString();
+                                }
+                              } catch (err) {
+                                console.error("Failed to fetch previous payments:", err);
+                              }
+                            }
+                            setPayModal({ open: true, item: detail, fullAmount: savedFullAmount, paidAmount: "", paymentType: "", note: "", loading: false, previousPayments });
+                          }}
+                          className={`px-3 py-1.5 rounded-lg text-xs font-medium border transition-colors ${
+                            paymentStatuses[detail.id] === "done"
+                              ? "bg-emerald-500/20 text-emerald-400 border-emerald-500/40 cursor-default"
+                              : paymentStatuses[detail.id] === "partially_done"
+                              ? "bg-amber-500/20 text-amber-400 border-amber-500/40 hover:bg-amber-500/30 cursor-pointer"
+                              : "bg-slate-500/20 text-slate-300 border-slate-500/40 hover:bg-slate-500/30 cursor-pointer"
+                          }`}
+                          disabled={paymentStatuses[detail.id] === "done"}
+                        >
+                          {paymentStatuses[detail.id] === "done"
+                            ? "Full"
+                            : paymentStatuses[detail.id] === "partially_done"
+                            ? "Partially"
+                            : "Pay"}
+                        </button>
+                        </div>
                       </td>
                     </tr>
                   ))}
@@ -408,6 +467,212 @@ export default function AppointmentManagement() {
           </div>
         </div>
       )}
+
+      {/* Pay Modal */}
+      {payModal.open && payModal.item && (() => {
+        const full = parseFloat(payModal.fullAmount) || 0;
+        const paid = parseFloat(payModal.paidAmount) || 0;
+        
+        // Calculate total previous payments
+        const totalPreviousPaid = payModal.previousPayments.reduce((sum, p) => sum + (parseFloat(p.amount) || 0), 0);
+        
+        // Calculate total after this payment
+        const totalAfterPayment = totalPreviousPaid + paid;
+        const balance = full - totalAfterPayment;
+        
+        // Check if this payment makes it partial or done
+        const isPartial = paid > 0 && totalAfterPayment < full;
+        const isDone = paid > 0 && totalAfterPayment >= full;
+        const canSubmit = full > 0 && paid > 0 && totalAfterPayment <= full && !!payModal.paymentType && !payModal.loading;
+
+        const handlePay = async (status: string) => {
+          if (!payModal.item) return;
+          const itemId = payModal.item.id;
+          setPayModal((p) => ({ ...p, loading: true }));
+          try {
+            await UseAxios("appointments/payment", "POST", {
+              user_id: payModal.item.user_id,
+              amount: paid,
+              fullAmount: full,
+              note: payModal.note || null,
+              status,
+              paymentMethod: payModal.paymentType,
+              paymentType: "Appointment",
+              appointment_id: payModal.item.id,
+            });
+            // immediately update button state without waiting for full refetch
+            setPaymentStatuses((prev) => ({ ...prev, [itemId]: status }));
+            setPayModal({ open: false, item: null, fullAmount: "", paidAmount: "", paymentType: "", note: "", loading: false, previousPayments: [] });
+            fetchAppointments();
+          } catch (err) {
+            console.error("Payment failed", err);
+            setPayModal((p) => ({ ...p, loading: false }));
+          }
+        };
+
+        return (
+          <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+            <div className="bg-slate-800 border border-slate-700 rounded-2xl p-6 w-full max-w-md shadow-xl">
+              <h3 className="text-lg font-bold text-white mb-4">Appointment Payment</h3>
+
+              {/* Info rows */}
+              <div className="bg-slate-700/40 rounded-xl border border-slate-600/50 p-4 mb-4 space-y-2 text-sm">
+                <div className="flex justify-between">
+                  <span className="text-slate-400">User Name</span>
+                  <span className="text-white font-medium">{payModal.item.user?.firstName} {payModal.item.user?.lastName}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-slate-400">Contact</span>
+                  <span className="text-white">{payModal.item.user?.contactNumber ?? "-"}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-slate-400">Appointment Date</span>
+                  <span className="text-white">{payModal.item.appointment?.date ? format(new Date(payModal.item.appointment.date + "T12:00:00"), "MMM d, yyyy") : "-"}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-slate-400">Time</span>
+                  <span className="text-white">{displayTime(payModal.item.time_in)} – {displayTime(payModal.item.time_out)}</span>
+                </div>
+                {/* Show Full Amount in details if there are previous payments */}
+                {payModal.previousPayments.length > 0 && full > 0 && (
+                  <div className="flex justify-between border-t border-slate-600 pt-2 mt-2">
+                    <span className="text-slate-400">Full Amount</span>
+                    <span className="text-white font-semibold">LKR {full.toFixed(2)}</span>
+                  </div>
+                )}
+              </div>
+
+              {/* Previous payments summary */}
+              {payModal.previousPayments.length > 0 && (
+                <div className="bg-amber-500/10 border border-amber-500/30 rounded-xl p-4 mb-4">
+                  <h4 className="text-sm font-semibold text-amber-400 mb-2">Previous Payments</h4>
+                  <div className="space-y-1.5">
+                    {payModal.previousPayments.map((payment, idx) => (
+                      <div key={idx} className="flex justify-between text-sm">
+                        <span className="text-slate-300">
+                          {format(new Date(payment.paymentDate), "MMM d, yyyy")} - {payment.paymentMethod}
+                        </span>
+                        <span className="text-white font-medium">LKR {parseFloat(payment.amount).toFixed(2)}</span>
+                      </div>
+                    ))}
+                    <div className="border-t border-amber-500/20 pt-2 mt-2 flex justify-between text-sm font-semibold">
+                      <span className="text-amber-400">Total Paid</span>
+                      <span className="text-amber-400">LKR {totalPreviousPaid.toFixed(2)}</span>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Payment fields */}
+              <div className="space-y-3">
+                {/* Only show Full Amount input if this is the first payment */}
+                {payModal.previousPayments.length === 0 && (
+                  <div>
+                    <label className="block text-sm text-slate-400 mb-1">Full Amount (LKR)</label>
+                    <input
+                      type="number" min="0" placeholder="Enter full amount"
+                      value={payModal.fullAmount}
+                      onChange={(e) => setPayModal((p) => ({ ...p, fullAmount: e.target.value, paidAmount: "" }))}
+                      className="w-full border border-slate-600 rounded-lg px-3 py-2 bg-slate-700/50 text-white focus:ring-2 focus:ring-amber-500"
+                    />
+                  </div>
+                )}
+                <div>
+                  <label className="block text-sm text-slate-400 mb-1">Paid Amount (LKR)</label>
+                  <input
+                    type="number" min="0" max={payModal.fullAmount || undefined} placeholder="Enter paid amount"
+                    value={payModal.paidAmount}
+                    onChange={(e) => setPayModal((p) => ({ ...p, paidAmount: e.target.value }))}
+                    className="w-full border border-slate-600 rounded-lg px-3 py-2 bg-slate-700/50 text-white focus:ring-2 focus:ring-amber-500"
+                  />
+                </div>
+
+                {/* Balance display */}
+                {full > 0 && paid > 0 && (
+                  <div>
+                    {/* Show calculation breakdown if there are previous payments */}
+                    {totalPreviousPaid > 0 && (
+                      <div className="bg-slate-700/30 rounded-lg px-4 py-2 mb-2 text-xs space-y-1">
+                        <div className="flex justify-between text-slate-400">
+                          <span>Previously Paid:</span>
+                          <span>LKR {totalPreviousPaid.toFixed(2)}</span>
+                        </div>
+                        <div className="flex justify-between text-slate-400">
+                          <span>Current Payment:</span>
+                          <span>LKR {paid.toFixed(2)}</span>
+                        </div>
+                        <div className="flex justify-between text-white font-medium border-t border-slate-600 pt-1">
+                          <span>Total Paid:</span>
+                          <span>LKR {totalAfterPayment.toFixed(2)}</span>
+                        </div>
+                      </div>
+                    )}
+                    <div className={`flex justify-between items-center rounded-lg px-4 py-2.5 text-sm font-medium border ${
+                      balance <= 0
+                        ? "bg-emerald-500/10 border-emerald-500/30 text-emerald-400"
+                        : "bg-amber-500/10 border-amber-500/30 text-amber-400"
+                    }`}>
+                      <span>Remaining Balance</span>
+                      <span>LKR {balance > 0 ? balance.toFixed(2) : "0.00"}</span>
+                    </div>
+                  </div>
+                )}
+
+                <div>
+                  <label className="block text-sm text-slate-400 mb-1">Payment Method</label>
+                  <select
+                    value={payModal.paymentType}
+                    onChange={(e) => setPayModal((p) => ({ ...p, paymentType: e.target.value }))}
+                    className="w-full border border-slate-600 rounded-lg px-3 py-2 bg-slate-700/50 text-white focus:ring-2 focus:ring-amber-500"
+                  >
+                    <option value="">-- Select --</option>
+                    <option value="Cash">Cash</option>
+                    <option value="Card">Card</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm text-slate-400 mb-1">Note (optional)</label>
+                  <textarea
+                    value={payModal.note}
+                    onChange={(e) => setPayModal((p) => ({ ...p, note: e.target.value }))}
+                    className="w-full border border-slate-600 rounded-lg px-3 py-2 bg-slate-700/50 text-white focus:ring-2 focus:ring-amber-500 resize-none"
+                    rows={2}
+                  />
+                </div>
+              </div>
+
+              <div className="flex gap-3 mt-5">
+                <button
+                  onClick={() => setPayModal({ open: false, item: null, fullAmount: "", paidAmount: "", paymentType: "", note: "", loading: false, previousPayments: [] })}
+                  className="flex-1 py-2.5 px-4 rounded-lg font-medium bg-slate-600 text-white hover:bg-slate-500"
+                >
+                  Cancel
+                </button>
+                {/* Show "Partially Done" button only if balance will remain after payment */}
+                {isPartial && (
+                  <button
+                    disabled={!canSubmit || !isPartial}
+                    onClick={() => handlePay("partially_done")}
+                    className="flex-1 py-2.5 px-4 rounded-lg font-semibold bg-amber-500/80 text-slate-900 hover:bg-amber-400 disabled:opacity-30 disabled:cursor-not-allowed transition-all"
+                  >
+                    {payModal.loading ? "..." : "Partially Done"}
+                  </button>
+                )}
+                {/* Show "Done" button when payment completes the full amount */}
+                {isDone && (
+                  <button
+                    disabled={!canSubmit || !isDone}
+                    onClick={() => handlePay("done")}
+                    className="flex-1 py-2.5 px-4 rounded-lg font-semibold bg-emerald-500 text-white hover:bg-emerald-400 disabled:opacity-30 disabled:cursor-not-allowed transition-all"
+                  >
+                    {payModal.loading ? "..." : "Done"}
+                  </button>
+                )}
+              </div>
+            </div>
+          </div>
+        );
+      })()}
     </div>
   );
 }

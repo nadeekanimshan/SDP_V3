@@ -30,6 +30,7 @@ type makePayment={
     paymentMethod:string,
     paymentType?:string,
     status?:string,
+    fullAmount?:number,
     user_id:number
 }
 const getAppointmentsByDate = async (date: string): Promise<getAppointmentsByDateResponse | null> => {
@@ -223,6 +224,7 @@ const makeAppointmentPayment=async(data:makePayment)=>{
     const appointment=await prisma.payment.create({
         data:{
             amount:data.amount,
+            fullAmount:data.fullAmount,
             appointment_id:data.appointment_id,
             note:data.note,
             paymentMethod:data.paymentMethod,

@@ -47,7 +47,20 @@ const createAppointment=async(req:Request,res:Response,next:NextFunction)=>{
 
         const appointments=await AppointmentService.createAppointment({date,startTime,endTime,appointmentType,user_id:Number(userId)});
         res.status(200).json(appointments);
-    } catch (error) {
+    } catch (error: any) {
+        // Handle known service errors with appropriate HTTP status
+        if (error?.message === "This time slot is already booked") {
+            res.status(409).json({ message: "This time slot is already booked. Please choose a different time." });
+            return;
+        }
+        if (error?.message === "Studio is closed on this date") {
+            res.status(400).json({ message: "Studio is closed on this date. Please select another date." });
+            return;
+        }
+        if (error?.message === "Selected time slot is not available") {
+            res.status(400).json({ message: "Selected time slot is not available." });
+            return;
+        }
         next(error)
     }
 }
@@ -129,12 +142,12 @@ const getAppointmentByDate=async(req:Request,res:Response,next:NextFunction)=>{
 
 const makeAppointmentPayment=async(req:Request,res:Response,next:NextFunction)=>{
     try {
-        const {amount,appointment_id,note,paymentMethod,user_id}=req.body
+        const {amount,appointment_id,note,paymentMethod,user_id,status,fullAmount}=req.body
         if(!amount || !appointment_id || !paymentMethod || !user_id){
              res.status(400).json({message:"Amount, appointment_id, paymentMethod and user_id are required"});
              return;
         }
-        const appointments=await AppointmentService.makeAppointmentPayment({amount,appointment_id,note,paymentMethod,user_id});
+        const appointments=await AppointmentService.makeAppointmentPayment({amount,appointment_id,note,paymentMethod,user_id,status,fullAmount});
         res.status(200).json(appointments);
     } catch (error) {
         next(error)
@@ -148,12 +161,8 @@ const getPaymentById=async(req:Request,res:Response,next:NextFunction)=>{
              res.status(400).json({message:"Id is required"});
              return;
         }
-        const appointments=await AppointmentService.getPaymentById(id);
-        if(appointments &&appointments.length>0){
-            res.status(409).json({message:"Payment already found"});
-            return;
-        }
-        res.status(200).json(appointments);
+        const payments=await AppointmentService.getPaymentById(id);
+        res.status(200).json(payments ?? []);
     } catch (error) {
         next(error)
     }

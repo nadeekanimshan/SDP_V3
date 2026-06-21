@@ -234,6 +234,7 @@ exports.Prisma.PaymentScalarFieldEnum = {
   id: 'id',
   user_id: 'user_id',
   amount: 'amount',
+  fullAmount: 'fullAmount',
   note: 'note',
   status: 'status',
   paymentDate: 'paymentDate',

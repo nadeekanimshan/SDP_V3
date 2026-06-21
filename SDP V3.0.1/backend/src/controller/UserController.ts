@@ -28,18 +28,22 @@ const getUserType=async(req:Request,res:Response,next:NextFunction)=>{
 
 const createUser=async(req:Request,res:Response,next:NextFunction)=>{
     try {
-        const data=req.body
-        console.log(data)
-        if(!data){
-             res.status(400).json({message:"Data is required"});
-             return;
-        }
-        const userType=await UserService.createUser(data);
-        if(!userType){
-            res.status(404).json([]);
+        const { email, password, firstName, lastName, contactNumber, address, city, district, typeId } = req.body
+
+        if(!email || !password || !firstName || !lastName || !contactNumber || !address || !city || !district || !typeId){
+            res.status(400).json({message:"All fields are required"});
             return;
         }
-        res.status(200).json(userType);
+
+        // Check if email already exists
+        const existing = await UserService.getUserByEmail(email);
+        if(existing){
+            res.status(409).json({message:"A user with this email already exists"});
+            return;
+        }
+
+        const newUser = await UserService.createUser({ email, password, firstName, lastName, contactNumber, address, city, district, typeId: Number(typeId) });
+        res.status(201).json(newUser);
     } catch (error) {
         next(error)
     }

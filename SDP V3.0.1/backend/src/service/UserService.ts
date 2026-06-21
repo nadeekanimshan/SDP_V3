@@ -15,9 +15,10 @@
 
 import { prisma } from "../../config/database/prisma"
 import { MonthType } from "../validator/UserValidator"
+const bcrypt = require('bcrypt');
 
 type User ={
-    id:number,
+    id?:number,
     email:string,
     firstName?:string,
     lastName?:string,
@@ -35,8 +36,19 @@ type UserFilter={
 }
 
 const createUser=async(user:User)=>{
+    const hashedPassword = await bcrypt.hash(user.password, 10);
     const newUser=await prisma.user.create({
-        data:user
+        data:{
+            email: user.email,
+            firstName: user.firstName,
+            lastName: user.lastName,
+            password: hashedPassword,
+            typeId: user.typeId,
+            contactNumber: user.contactNumber,
+            address: user.address,
+            city: user.city,
+            district: user.district,
+        }
     })
     return newUser
 }

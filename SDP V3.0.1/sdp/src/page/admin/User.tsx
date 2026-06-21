@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react';
 import { UseAxios } from '../../hook/useAxios';
 import { FaSearch, FaPlus, FaEdit, FaTrash } from 'react-icons/fa';
 import { Dialog } from '@headlessui/react';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 interface UserType {
   id: number;
@@ -44,6 +46,20 @@ export default function UserManagement() {
     password: '',
   });
 
+  // Delete confirmation popup state
+  const [deleteConfirm, setDeleteConfirm] = useState<{ open: boolean; user: User | null }>({ open: false, user: null });
+
+  // Password validation state
+  const [passwordError, setPasswordError] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [confirmPasswordError, setConfirmPasswordError] = useState('');
+
+  const validatePassword = (pwd: string): string => {
+    if (pwd.length < 6) return 'Password must be at least 6 characters.';
+    
+    return '';
+  };
+
   useEffect(() => {
     fetchUserTypes();
     fetchUsers();
@@ -81,6 +97,9 @@ export default function UserManagement() {
       typeId: '',
       password: '',
     });
+    setPasswordError('');
+    setConfirmPassword('');
+    setConfirmPasswordError('');
     setIsModalOpen(true);
   };
 
@@ -101,19 +120,43 @@ export default function UserManagement() {
   };
 
   const handleFormSubmit = async () => {
-    if (modalUser) {
-      await UseAxios(`users/${modalUser.id}`, "PUT", {
-        ...formData,
-        typeId: Number(formData.typeId),
-      });
-    } else {
-      await UseAxios('users', "POST", {
-        ...formData,
-        typeId: Number(formData.typeId),
-      });
+    try {
+      if (modalUser) {
+        await UseAxios(`users/${modalUser.id}`, "PUT", {
+          ...formData,
+          typeId: Number(formData.typeId),
+        });
+        toast.success('User updated successfully.');
+      } else {
+        const { email, password, firstName, lastName, contactNumber, address, city, district, typeId } = formData;
+        if (!email || !password || !firstName || !lastName || !contactNumber || !address || !city || !district || !typeId) {
+          toast.error('Please fill in all required fields.');
+          return;
+        }
+        // Password validation
+        const pwdErr = validatePassword(password);
+        if (pwdErr) {
+          setPasswordError(pwdErr);
+          return;
+        }
+        if (password !== confirmPassword) {
+          setConfirmPasswordError('Passwords do not match.');
+          return;
+        }
+        await UseAxios('users', "POST", {
+          ...formData,
+          typeId: Number(formData.typeId),
+        });
+        toast.success('User added successfully.');
+      }
+      setIsModalOpen(false);
+      setConfirmPassword('');
+      setPasswordError('');
+      setConfirmPasswordError('');
+      fetchUsers();
+    } catch (err: any) {
+      toast.error(err?.response?.data?.message || 'Failed to save user.');
     }
-    setIsModalOpen(false);
-    fetchUsers();
   };
 
   const handleRestoreUser = async (userId: number) => {
@@ -126,20 +169,21 @@ export default function UserManagement() {
     }
   };
 
-  const handleDeleteUser = async (user: User) => {
+  const handleDeleteUser = (user: User) => {
+    setDeleteConfirm({ open: true, user });
+  };
+
+  const confirmDelete = async () => {
+    const user = deleteConfirm.user;
+    if (!user) return;
+    setDeleteConfirm({ open: false, user: null });
+
     if (user.deleteStatus) {
-      // Already soft-deleted → permanently delete
-      if (confirm(`Permanently delete ${user.firstName} ${user.lastName}? This cannot be undone.`)) {
-        await UseAxios(`users/${user.id}/permanent`, "DELETE");
-        fetchUsers();
-      }
+      await UseAxios(`users/${user.id}/permanent`, "DELETE");
     } else {
-      // Active → soft delete
-      if (confirm(`Delete ${user.firstName} ${user.lastName}?`)) {
-        await UseAxios(`users/${user.id}`, "DELETE");
-        fetchUsers();
-      }
+      await UseAxios(`users/${user.id}`, "DELETE");
     }
+    fetchUsers();
   };
 
   const filteredUsers = users.filter((user) =>
@@ -189,16 +233,7 @@ export default function UserManagement() {
               />
               All
             </label>
-            <label className="flex items-center gap-1 cursor-pointer">
-              <input
-                type="radio"
-                name="status"
-                value="false"
-                checked={deleteStatus === false}
-                onChange={() => setDeleteStatus(false)}
-              />
-              Active
-            </label>
+            
             <label className="flex items-center gap-1 cursor-pointer">
               <input
                 type="radio"
@@ -233,7 +268,6 @@ export default function UserManagement() {
               <th className="px-6 py-3">Email</th>
               <th className="px-6 py-3">Contact</th>
               <th className="px-6 py-3">Type</th>
-              <th className="px-6 py-3">Status</th>
               <th className="px-6 py-3">Actions</th>
             </tr>
           </thead>
@@ -246,11 +280,7 @@ export default function UserManagement() {
                 <td className="px-6 py-4 text-slate-200">{user.email}</td>
                 <td className="px-6 py-4 text-slate-200">{user.contactNumber}</td>
                 <td className="px-6 py-4 text-slate-200">{user.type?.name}</td>
-                <td className="px-6 py-4">
-                  <span className={user.deleteStatus ? "text-rose-400" : "text-emerald-400"}>
-                    {user.deleteStatus ? 'Deleted' : 'Active'}
-                  </span>
-                </td>
+                
                 <td className="px-6 py-4 flex gap-2">
                   <button
                     onClick={() => openEditModal(user)}
@@ -303,8 +333,48 @@ export default function UserManagement() {
               <input type="text" placeholder="Address" value={formData.address} onChange={(e) => setFormData({ ...formData, address: e.target.value })} className="w-full border border-slate-600 rounded-lg px-3 py-2 bg-slate-700/50 text-white placeholder-slate-400" />
               <input type="text" placeholder="City" value={formData.city} onChange={(e) => setFormData({ ...formData, city: e.target.value })} className="w-full border border-slate-600 rounded-lg px-3 py-2 bg-slate-700/50 text-white placeholder-slate-400" />
               <input type="text" placeholder="District" value={formData.district} onChange={(e) => setFormData({ ...formData, district: e.target.value })} className="w-full border border-slate-600 rounded-lg px-3 py-2 bg-slate-700/50 text-white placeholder-slate-400" />
-              {/* password */}
-              {!modalUser && <input type="password" placeholder="Password" value={formData.password} onChange={(e) => setFormData({ ...formData, password: e.target.value })} className="w-full border border-slate-600 rounded-lg px-3 py-2 bg-slate-700/50 text-white placeholder-slate-400" />}
+              {/* password - only on add */}
+              {!modalUser && (
+                <>
+                  <div>
+                    <input
+                      type="password"
+                      placeholder="Password"
+                      value={formData.password}
+                      onChange={(e) => {
+                        const val = e.target.value;
+                        setFormData({ ...formData, password: val });
+                        setPasswordError(val ? validatePassword(val) : '');
+                        if (confirmPassword) {
+                          setConfirmPasswordError(val !== confirmPassword ? 'Passwords do not match.' : '');
+                        }
+                      }}
+                      className={`w-full border rounded-lg px-3 py-2 bg-slate-700/50 text-white placeholder-slate-400 ${passwordError ? 'border-rose-500' : 'border-slate-600'}`}
+                    />
+                    {passwordError && <p className="text-rose-400 text-xs mt-1">{passwordError}</p>}
+                    {!passwordError && formData.password && (
+                      <p className="text-emerald-400 text-xs mt-1">✓ Password looks good</p>
+                    )}
+                  </div>
+                  <div>
+                    <input
+                      type="password"
+                      placeholder="Confirm Password"
+                      value={confirmPassword}
+                      onChange={(e) => {
+                        const val = e.target.value;
+                        setConfirmPassword(val);
+                        setConfirmPasswordError(val !== formData.password ? 'Passwords do not match.' : '');
+                      }}
+                      className={`w-full border rounded-lg px-3 py-2 bg-slate-700/50 text-white placeholder-slate-400 ${confirmPasswordError ? 'border-rose-500' : 'border-slate-600'}`}
+                    />
+                    {confirmPasswordError && <p className="text-rose-400 text-xs mt-1">{confirmPasswordError}</p>}
+                    {!confirmPasswordError && confirmPassword && (
+                      <p className="text-emerald-400 text-xs mt-1">✓ Passwords match</p>
+                    )}
+                  </div>
+                </>
+              )}
               <select value={formData.typeId} onChange={(e) => setFormData({ ...formData, typeId: e.target.value })} className="w-full border border-slate-600 rounded-lg px-3 py-2 bg-slate-700/50 text-white">
                 <option value="">Select User Type</option>
                 {userTypes.map((type) => (
@@ -334,6 +404,56 @@ export default function UserManagement() {
           </Dialog.Panel>
         </div>
       </Dialog>
+
+      <ToastContainer position="top-right" autoClose={3000} />
+
+      {/* Delete Confirmation Popup */}
+      {deleteConfirm.open && deleteConfirm.user && (
+        <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/60 backdrop-blur-sm px-4">
+          <div className="bg-slate-800 border border-slate-700 rounded-2xl shadow-2xl w-full max-w-sm p-6">
+            {/* Icon */}
+            <div className="flex items-center justify-center w-14 h-14 rounded-full bg-rose-500/20 mx-auto mb-4">
+              <FaTrash className="text-rose-400 text-xl" />
+            </div>
+
+            {/* Title */}
+            <h3 className="text-lg font-bold text-white text-center mb-2">
+              {deleteConfirm.user.deleteStatus ? 'Permanently Delete User' : 'Delete User'}
+            </h3>
+
+            {/* Message */}
+            <p className="text-slate-300 text-sm text-center mb-1">
+              {deleteConfirm.user.deleteStatus
+                ? 'This will permanently remove'
+                : 'Are you sure you want to delete'}
+            </p>
+            <p className="text-white font-semibold text-center mb-4">
+              {deleteConfirm.user.firstName} {deleteConfirm.user.lastName}
+            </p>
+            {deleteConfirm.user.deleteStatus && (
+              <p className="text-rose-400 text-xs text-center mb-4 bg-rose-500/10 rounded-lg py-2 px-3">
+                ⚠ This action cannot be undone.
+              </p>
+            )}
+
+            {/* Buttons */}
+            <div className="flex gap-3">
+              <button
+                onClick={() => setDeleteConfirm({ open: false, user: null })}
+                className="flex-1 py-2 px-4 bg-slate-600 text-white rounded-lg hover:bg-slate-500 transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={confirmDelete}
+                className="flex-1 py-2 px-4 bg-rose-600 text-white rounded-lg font-medium hover:bg-rose-500 transition-colors"
+              >
+                {deleteConfirm.user.deleteStatus ? 'Delete Permanently' : 'Delete'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

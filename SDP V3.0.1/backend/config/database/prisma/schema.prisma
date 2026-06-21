@@ -168,6 +168,7 @@ model Payment {
     id           Int       @id @default(autoincrement())
     user_id     Int      @map("user_id")
     amount     Decimal
+    fullAmount Decimal?  @map("full_amount")
     note       String?
     status     String @default("Pending")
     paymentDate DateTime @default(now()) @map("payment_date")

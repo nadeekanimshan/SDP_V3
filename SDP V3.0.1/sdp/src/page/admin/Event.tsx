@@ -1,6 +1,8 @@
 import {useEffect, useState} from "react";
 import { UseAxios } from "../../hook/useAxios";
 import {FaPlus, FaTrash, FaEdit, FaSearch} from "react-icons/fa";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 export default function Event() {
     const [events, setEvents] = useState([]);
@@ -46,7 +48,7 @@ export default function Event() {
         e.preventDefault();
         // Basic validation
         if (!formData.title || !formData.startDate || !formData.time) {
-            alert("Please fill required fields (Title, Start Date, Time)");
+            toast.error("Please fill required fields (Title, Start Date, Time)");
             return;
         }
 
@@ -61,7 +63,7 @@ export default function Event() {
 
         // Reject past dates
         if (selectedDateStr < todayStr) {
-            alert("Cannot create event with a past date.");
+            toast.error("Cannot create event with a past date.");
             return;
         }
 
@@ -77,7 +79,7 @@ export default function Event() {
             const nowMinutes = now.getHours() * 60 + now.getMinutes();
 
             if (selectedMinutes <= nowMinutes) {
-                alert("Cannot create event with a past or current time for today.");
+                toast.error("Cannot create event with a past or current time for today.");
                 return;
             }
         }
@@ -91,10 +93,10 @@ export default function Event() {
             setShowModal(false);
             fetchEvents();
             resetForm();
+            toast.success("Event saved successfully.");
         } catch (err: any) {
             console.error(err);
-            const errorMessage = err.response?.data?.message || "Failed to save event";
-            alert(errorMessage);
+            toast.error(err.response?.data?.message || "Failed to save event");
         }
     };
 
@@ -253,6 +255,7 @@ export default function Event() {
                     </div>
                 </div>
             )}
+            <ToastContainer position="top-right" autoClose={3000} />
         </div>
     );
 }
