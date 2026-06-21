@@ -113,13 +113,6 @@ export default function AdminDashboard() {
           <FaBook />
           {isSidebarOpen && <span>Classes</span>}
         </button>
-        <button
-          className="flex items-center space-x-2 hover:bg-slate-800 p-2 rounded transition-colors"
-          onClick={() => setActiveComponent('attendance')}
-        >
-          <FaUser />
-          {isSidebarOpen && <span>Attendance</span>}
-        </button>
 
         <button
           className="flex items-center space-x-2 hover:bg-slate-800 p-2 rounded transition-colors"

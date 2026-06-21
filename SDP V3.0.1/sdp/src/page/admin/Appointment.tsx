@@ -61,6 +61,9 @@ export default function AppointmentManagement() {
   const [selectedStatus, setSelectedStatus] = useState<string>("");
   const [listAllMode, setListAllMode] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
+  const [autoRefresh, setAutoRefresh] = useState(true);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage] = useState(20);
   const [reasonModal, setReasonModal] = useState<{ open: boolean; item: AppointmentItem | null }>({ open: false, item: null });
   const [rejectModal, setRejectModal] = useState<{ open: boolean; item: AppointmentItem | null; reason: string; type: "appointment" | "cancel" }>({ open: false, item: null, reason: "", type: "appointment" });
   const [payModal, setPayModal] = useState<{ open: boolean; item: AppointmentItem | null; fullAmount: string; paidAmount: string; paymentType: string; note: string; loading: boolean; previousPayments: any[] }>({ open: false, item: null, fullAmount: "", paidAmount: "", paymentType: "", note: "", loading: false, previousPayments: [] });
@@ -125,11 +128,13 @@ export default function AppointmentManagement() {
     fetchAppointments();
   }, [fetchAppointments]);
 
-  // Poll for real-time status updates every 15s
+  // Poll for real-time status updates every 15s (only if autoRefresh is enabled)
   useEffect(() => {
+    if (!autoRefresh) return;
+    
     const interval = setInterval(fetchAppointments, APPOINTMENTS_POLL_INTERVAL_MS);
     return () => clearInterval(interval);
-  }, [fetchAppointments]);
+  }, [fetchAppointments, autoRefresh]);
 
   const handleStatusChange = async (id: number, status: string, detail: AppointmentItem) => {
     if (status === "rejected") {
@@ -144,11 +149,37 @@ export default function AppointmentManagement() {
     }
   };
 
-  const filteredAppointments = appointments.filter((item) =>
-    `${item.user?.firstName ?? ""} ${item.user?.lastName ?? ""}`
-      .toLowerCase()
-      .includes(search.toLowerCase())
-  );
+  const filteredAppointments = appointments
+    .filter((item) =>
+      `${item.user?.firstName ?? ""} ${item.user?.lastName ?? ""}`
+        .toLowerCase()
+        .includes(search.toLowerCase())
+    )
+    .sort((a, b) => {
+      // Sort by date (nearest date first)
+      const dateA = new Date(a.appointment?.date || 0);
+      const dateB = new Date(b.appointment?.date || 0);
+      
+      if (dateA.getTime() !== dateB.getTime()) {
+        return dateA.getTime() - dateB.getTime(); // Ascending order (earliest first)
+      }
+      
+      // If same date, sort by time_in
+      const timeA = a.time_in?.replace(".", ":") || "00:00";
+      const timeB = b.time_in?.replace(".", ":") || "00:00";
+      return timeA.localeCompare(timeB);
+    });
+
+  // Calculate pagination
+  const totalPages = Math.ceil(filteredAppointments.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const paginatedAppointments = filteredAppointments.slice(startIndex, endIndex);
+
+  // Reset to page 1 when filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [search, selectedDate, selectedStatus, listAllMode]);
 
   return (
     <div className="flex-1 min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 p-6">
@@ -158,6 +189,29 @@ export default function AppointmentManagement() {
           <h1 className="text-3xl font-bold text-white flex items-center gap-2">
             <FaCalendarAlt className="text-amber-400" /> Appointments
           </h1>
+          
+          {/* Auto-refresh toggle */}
+          <div className="flex items-center gap-3">
+            <span className="text-sm text-slate-400">Auto-refresh (15s)</span>
+            <button
+              onClick={() => setAutoRefresh(!autoRefresh)}
+              className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
+                autoRefresh ? "bg-emerald-500" : "bg-slate-600"
+              }`}
+            >
+              <span
+                className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                  autoRefresh ? "translate-x-6" : "translate-x-1"
+                }`}
+              />
+            </button>
+            {autoRefresh && (
+              <span className="text-xs text-emerald-400 font-medium">ON</span>
+            )}
+            {!autoRefresh && (
+              <span className="text-xs text-slate-500 font-medium">OFF</span>
+            )}
+          </div>
         </div>
 
         {/* Controls */}
@@ -265,7 +319,7 @@ export default function AppointmentManagement() {
                   </tr>
                 </thead>
                 <tbody>
-                  {filteredAppointments.map((detail) => (
+                  {paginatedAppointments.map((detail) => (
                     <tr
                       key={detail.id}
                       className="border-b border-slate-700/50 hover:bg-slate-700/30 transition-colors"
@@ -392,6 +446,60 @@ export default function AppointmentManagement() {
                   ))}
                 </tbody>
               </table>
+            </div>
+          )}
+
+          {/* Pagination Controls */}
+          {!isLoading && filteredAppointments.length > 0 && (
+            <div className="flex items-center justify-between px-6 py-4 border-t border-slate-700/50">
+              <div className="text-sm text-slate-400">
+                Showing {startIndex + 1} to {Math.min(endIndex, filteredAppointments.length)} of {filteredAppointments.length} appointments
+              </div>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                  disabled={currentPage === 1}
+                  className="px-3 py-1.5 rounded-lg text-sm font-medium bg-slate-700/50 text-white hover:bg-slate-600/50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                >
+                  Previous
+                </button>
+                
+                <div className="flex gap-1">
+                  {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => {
+                    // Show first page, last page, current page, and pages around current
+                    if (
+                      page === 1 ||
+                      page === totalPages ||
+                      (page >= currentPage - 1 && page <= currentPage + 1)
+                    ) {
+                      return (
+                        <button
+                          key={page}
+                          onClick={() => setCurrentPage(page)}
+                          className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
+                            currentPage === page
+                              ? "bg-amber-500 text-slate-900"
+                              : "bg-slate-700/50 text-white hover:bg-slate-600/50"
+                          }`}
+                        >
+                          {page}
+                        </button>
+                      );
+                    } else if (page === currentPage - 2 || page === currentPage + 2) {
+                      return <span key={page} className="px-2 text-slate-500">...</span>;
+                    }
+                    return null;
+                  })}
+                </div>
+
+                <button
+                  onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+                  disabled={currentPage === totalPages}
+                  className="px-3 py-1.5 rounded-lg text-sm font-medium bg-slate-700/50 text-white hover:bg-slate-600/50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                >
+                  Next
+                </button>
+              </div>
             </div>
           )}
         </div>
