@@ -54,7 +54,7 @@ export default function Profile() {
           <h2 className="text-2xl font-bold text-white mb-2">Profile Settings</h2>
           <p className="text-slate-400 mb-6">Update your name and password</p>
 
-          <form onSubmit={handleUpdateProfile} className="space-y-4">
+          <form onSubmit={handleUpdateProfile} autoComplete="off" className="space-y-4">
             <div>
               <label className="block text-sm font-medium text-slate-300 mb-1">First Name</label>
               <input type="text" value={firstName} onChange={(e) => setFirstName(e.target.value)} className="w-full px-4 py-2 bg-slate-700/50 border border-slate-600 rounded-lg text-white focus:ring-2 focus:ring-amber-500" required />
@@ -66,18 +66,41 @@ export default function Profile() {
 
             <div className="pt-4 border-t border-slate-700/50">
               <h3 className="text-lg font-semibold text-white mb-3">Change Password</h3>
+              {/* Hidden dummy inputs trick browsers into not autofilling the real fields */}
+              <input type="text" style={{ display: 'none' }} autoComplete="username" />
+              <input type="password" style={{ display: 'none' }} autoComplete="current-password" />
               <div className="space-y-4">
                 <div>
                   <label className="block text-sm font-medium text-slate-300 mb-1">Current Password</label>
-                  <input type="password" value={currentPassword} onChange={(e) => setCurrentPassword(e.target.value)} className="w-full px-4 py-2 bg-slate-700/50 border border-slate-600 rounded-lg text-white placeholder-slate-400 focus:ring-2 focus:ring-amber-500" placeholder="Leave blank to keep current password" />
+                  <input
+                    type="password"
+                    value={currentPassword}
+                    onChange={(e) => setCurrentPassword(e.target.value)}
+                    autoComplete="off"
+                    className="w-full px-4 py-2 bg-slate-700/50 border border-slate-600 rounded-lg text-white placeholder-slate-400 focus:ring-2 focus:ring-amber-500"
+                    placeholder="Enter current password"
+                  />
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-slate-300 mb-1">New Password</label>
-                  <input type="password" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} className="w-full px-4 py-2 bg-slate-700/50 border border-slate-600 rounded-lg text-white placeholder-slate-400 focus:ring-2 focus:ring-amber-500" placeholder="Min 6 characters" />
+                  <input
+                    type="password"
+                    value={newPassword}
+                    onChange={(e) => setNewPassword(e.target.value)}
+                    autoComplete="new-password"
+                    className="w-full px-4 py-2 bg-slate-700/50 border border-slate-600 rounded-lg text-white placeholder-slate-400 focus:ring-2 focus:ring-amber-500"
+                    placeholder="Min 6 characters"
+                  />
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-slate-300 mb-1">Confirm New Password</label>
-                  <input type="password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} className="w-full px-4 py-2 bg-slate-700/50 border border-slate-600 rounded-lg text-white focus:ring-2 focus:ring-amber-500" />
+                  <input
+                    type="password"
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    autoComplete="new-password"
+                    className="w-full px-4 py-2 bg-slate-700/50 border border-slate-600 rounded-lg text-white focus:ring-2 focus:ring-amber-500"
+                  />
                 </div>
               </div>
             </div>

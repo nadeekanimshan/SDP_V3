@@ -13,7 +13,7 @@ const Footer = () => {
         <div className="space-y-4">
           <img src={logo} alt="FMS Education Logo" className="h-10" />
           <p className="text-sm text-gray-300">
-            Your premier destination for artistic growth, professional guidance, and creative innovation—delivering every session with passion, precision, and purpose.
+            Your premier destination for artistic growth, professional guidance, and creative innovation delivering every session with passion, precision, and purpose.
           </p>
           <div className="flex gap-4 mt-4">
             <a href="https://web.facebook.com/audiodiarystudios" target="_blank" rel="noopener noreferrer">
@@ -25,16 +25,7 @@ const Footer = () => {
           </div>
         </div>
 
-        {/* Center Section */}
-        <div>
-          <h2 className="text-lg font-semibold mb-4">Links</h2>
-          <ul className="space-y-2 text-sm text-gray-300">
-            <li><a href="#home" className="hover:text-white">Home</a></li>
-            <li><a href="#my-5" className="hover:text-white">Services</a></li>
-            <li><a href="#container" className="hover:text-white">About</a></li>
-            <li><a href="#footer" className="hover:text-white">Contact</a></li>
-          </ul>
-        </div>
+        
 
         {/* Right Section */}
         <div>

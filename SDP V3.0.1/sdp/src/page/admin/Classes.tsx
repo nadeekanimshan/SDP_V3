@@ -1,18 +1,8 @@
 import { useEffect, useState, useCallback } from "react";
 import { UseAxios } from "../../hook/useAxios";
 import { FaEdit, FaTrash, FaSearch, FaPlus } from "react-icons/fa";
-
-const DURATION_OPTIONS = [
-  { value: "1", label: "1h", hours: 1 },
-  { value: "1.30", label: "1h 30min", hours: 1.5 },
-  { value: "2", label: "2h", hours: 2 },
-  { value: "2.30", label: "2h 30min", hours: 2.5 },
-  { value: "3", label: "3h", hours: 3 },
-  { value: "3.30", label: "3h 30min", hours: 3.5 },
-  { value: "4", label: "4h", hours: 4 },
-  { value: "4.30", label: "4h 30min", hours: 4.5 },
-  { value: "5", label: "5h", hours: 5 },
-];
+import { format } from "date-fns";
+import { toast, ToastContainer } from "react-toastify";
 
 const DAYS = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
 
@@ -24,32 +14,37 @@ interface ClassType {
   day: string;
   startTime: string;
   endTime?: string;
+  startDate?: string;
   installments_count: number;
   installments_price: string;
   full_price: string;
 }
 
-function computeEndTime(startTime: string, durationHours: number): string {
-  if (!startTime || !durationHours) return "";
-  const [h, m] = startTime.split(":").map(Number);
-  const totalMins = h * 60 + (m || 0) + durationHours * 60;
-  const endH = Math.floor(totalMins / 60) % 24;
-  const endM = totalMins % 60;
-  return `${String(endH).padStart(2, "0")}:${String(endM).padStart(2, "0")}`;
+function to12h(time: string): string {
+  if (!time) return "-";
+  const t = time.replace(".", ":");
+  const [hStr, mStr] = t.split(":");
+  let h = parseInt(hStr, 10);
+  const m = mStr?.padStart(2, "0") ?? "00";
+  if (isNaN(h)) return time;
+  const period = h >= 12 ? "PM" : "AM";
+  h = h % 12 || 12;
+  return `${String(h).padStart(2, "0")}:${m} ${period}`;
 }
 
-function parseDurationHours(d: string | undefined): number {
-  if (!d) return 0;
-  const opt = DURATION_OPTIONS.find((o) => o.label === d || o.value === d);
-  if (opt) return opt.hours;
-  const s = String(d);
-  const m = s.match(/(\d+)h\s*30\s*min/i);
-  if (m) return parseInt(m[1], 10) + 0.5;
-  const m2 = s.match(/(\d+)\s*hour/i);
-  if (m2) return parseInt(m2[1], 10);
-  const m3 = s.match(/(\d+)h/i);
-  if (m3) return parseInt(m3[1], 10);
-  return parseFloat(s.replace(/[^0-9.]/g, "")) || 0;
+function computeDurationLabel(startTime: string, endTime: string): string {
+  if (!startTime || !endTime) return "";
+  const [sh, sm] = startTime.split(":").map(Number);
+  const [eh, em] = endTime.split(":").map(Number);
+  const startMins = sh * 60 + (sm || 0);
+  const endMins = eh * 60 + (em || 0);
+  const diff = endMins - startMins;
+  if (diff <= 0) return "";
+  const hrs = Math.floor(diff / 60);
+  const mins = diff % 60;
+  if (hrs === 0) return `${mins}min`;
+  if (mins === 0) return `${hrs}h`;
+  return `${hrs}h ${mins}min`;
 }
 
 export default function ClassManagement() {
@@ -61,16 +56,6 @@ export default function ClassManagement() {
   const [showModal, setShowModal] = useState(false);
 
   const updateEndTimeFromDuration = useCallback((data: Partial<ClassType>) => {
-    const hours = parseDurationHours(data.duration);
-    if (data.startTime && hours) {
-      const st = String(data.startTime);
-      const normalized = st.includes(":") ? st.replace(".", ":") : st;
-      const [h, m] = normalized.split(":");
-      if (h !== undefined) {
-        const end = computeEndTime(`${h.padStart(2, "0")}:${(m || "0").padStart(2, "0")}`, hours);
-        return { ...data, endTime: end };
-      }
-    }
     return data;
   }, []);
 
@@ -97,19 +82,38 @@ export default function ClassManagement() {
   };
 
   const handleSubmit = async () => {
+    // Normalize startDate to first day of month in YYYY-MM-DD format
+    let startDate = formData.startDate || "";
+    if (startDate) {
+      const d = new Date(startDate);
+      // Use UTC to avoid timezone shifting the month
+      startDate = `${d.getUTCFullYear()}-${String(d.getUTCMonth() + 1).padStart(2, "0")}-01`;
+    }
+
     const payload = {
       ...formData,
       day: selectedDays.length > 0 ? selectedDays.join(", ") : formData.day,
+      duration: formData.startTime && formData.endTime
+        ? computeDurationLabel(formData.startTime, formData.endTime)
+        : formData.duration ?? "",
+      startDate: startDate || new Date().toISOString().split("T")[0],
     };
-    if (formData.id) {
-      await UseAxios(`classes/${formData.id}`, "PUT", payload);
-    } else {
-      await UseAxios("classes", "POST", payload);
+
+    try {
+      if (formData.id) {
+        await UseAxios(`classes/${formData.id}`, "PUT", payload);
+      } else {
+        await UseAxios("classes", "POST", payload);
+      }
+      toast.success(formData.id ? "Class updated successfully" : "Class created successfully");
+      fetchClasses();
+      setShowModal(false);
+      setFormData({});
+      setSelectedDays([]);
+    } catch (error: any) {
+      const message = error?.response?.data?.message || error?.message || "Failed to save class";
+      toast.error(message);
     }
-    fetchClasses();
-    setShowModal(false);
-    setFormData({});
-    setSelectedDays([]);
   };
 
   const openModal = (data?: Partial<ClassType>) => {
@@ -133,6 +137,7 @@ export default function ClassManagement() {
 
   return (
     <div className="flex-1 min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 p-6">
+      <ToastContainer position="top-center" autoClose={4000} />
       <div className="max-w-7xl mx-auto">
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-3xl font-bold text-white">Classes</h1>
@@ -158,6 +163,8 @@ export default function ClassManagement() {
               <th className="px-6 py-3">Duration</th>
               <th className="px-6 py-3">Day</th>
               <th className="px-6 py-3">Start Time</th>
+              <th className="px-6 py-3">End Time</th>
+              <th className="px-6 py-3">Start Month</th>
               <th className="px-6 py-3">Installments</th>
               <th className="px-6 py-3">Full Price</th>
               <th className="px-6 py-3">Actions</th>
@@ -170,7 +177,11 @@ export default function ClassManagement() {
                 <td className="px-6 py-4 text-slate-300">{cls.description?.slice(0, 40)}...</td>
                 <td className="px-6 py-4 text-slate-300">{cls.duration}</td>
                 <td className="px-6 py-4 text-slate-300">{cls.day}</td>
-                <td className="px-6 py-4 text-slate-300">{cls.startTime}</td>
+                <td className="px-6 py-4 text-slate-300">{to12h(cls.startTime)}</td>
+                <td className="px-6 py-4 text-slate-300">{cls.endTime ? to12h(cls.endTime) : "-"}</td>
+                <td className="px-6 py-4 text-slate-300">
+                  {cls.startDate ? format(new Date(cls.startDate), "MMM yyyy") : "-"}
+                </td>
                 <td className="px-6 py-4 text-slate-300">{cls.installments_count} x {cls.installments_price}</td>
                 <td className="px-6 py-4 text-slate-300">{cls.full_price}</td>
                 <td className="px-6 py-4 flex gap-3">
@@ -252,22 +263,6 @@ export default function ClassManagement() {
       <div><label className="block text-sm text-slate-300 mb-1">Class Name</label><input className="w-full border border-slate-600 rounded-lg px-3 py-2 bg-slate-700/50 text-white" placeholder="Class Name" value={formData.name || ""} onChange={(e) => setFormData({ ...formData, name: e.target.value })} /></div>
       <div><label className="block text-sm text-slate-300 mb-1">Description</label><textarea className="w-full border border-slate-600 rounded-lg px-3 py-2 bg-slate-700/50 text-white" placeholder="Description" value={formData.description || ""} onChange={(e) => setFormData({ ...formData, description: e.target.value })} /></div>
       <div>
-        <label className="block text-sm text-slate-300 mb-1">Duration (hours / Day)</label>
-        <select className="w-full border border-slate-600 rounded-lg px-3 py-2 bg-slate-700/50 text-white" value={formData.duration ? (() => {
-          const opt = DURATION_OPTIONS.find((o) => o.label === formData.duration || o.value === formData.duration);
-          if (opt) return opt.value;
-          const hours = parseDurationHours(formData.duration);
-          return DURATION_OPTIONS.find((o) => o.hours === hours)?.value ?? formData.duration;
-        })() : ""} onChange={(e) => {
-          const opt = DURATION_OPTIONS.find((o) => o.value === e.target.value);
-          const next = { ...formData, duration: opt?.label ?? e.target.value };
-          setFormData(updateEndTimeFromDuration(next));
-        }}>
-          <option value="">Select Duration</option>
-          {DURATION_OPTIONS.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
-        </select>
-      </div>
-      <div>
         <label className="block text-sm text-slate-300 mb-1">Days</label>
         <div className="flex flex-wrap gap-3">
           {DAYS.map((d) => (
@@ -278,31 +273,36 @@ export default function ClassManagement() {
           ))}
         </div>
       </div>
-      <div>
-        <label className="block text-sm text-slate-300 mb-1">Start Time</label>
-        <input type="time" className="w-full border border-slate-600 rounded-lg px-3 py-2 bg-slate-700/50 text-white" value={(() => {
-          const st = formData.startTime || "";
-          if (!st) return "";
-          if (st.includes("AM") || st.includes("PM")) {
-            const [t, p] = st.split(/(?=\s*[AP]M)/i);
-            const [h, m] = t.trim().split(":").map(Number);
-            let hour = h || 0;
-            if (p?.toUpperCase().includes("PM") && hour !== 12) hour += 12;
-            if (p?.toUpperCase().includes("AM") && hour === 12) hour = 0;
-            return `${String(hour).padStart(2, "0")}:${String(m || 0).padStart(2, "0")}`;
-          }
-          return st.replace(".", ":");
-        })()} onChange={(e) => {
-          const next = { ...formData, startTime: e.target.value };
-          setFormData(updateEndTimeFromDuration(next));
-        }} />
+      <div className="grid grid-cols-2 gap-3">
+        <div>
+          <label className="block text-sm text-slate-300 mb-1">Start Time</label>
+          <input type="time" className="w-full border border-slate-600 rounded-lg px-3 py-2 bg-slate-700/50 text-white" value={(() => {
+            const st = formData.startTime || "";
+            if (!st) return "";
+            if (st.includes("AM") || st.includes("PM")) {
+              const [t, p] = st.split(/(?=\s*[AP]M)/i);
+              const [h, m] = t.trim().split(":").map(Number);
+              let hour = h || 0;
+              if (p?.toUpperCase().includes("PM") && hour !== 12) hour += 12;
+              if (p?.toUpperCase().includes("AM") && hour === 12) hour = 0;
+              return `${String(hour).padStart(2, "0")}:${String(m || 0).padStart(2, "0")}`;
+            }
+            return st.replace(".", ":");
+          })()} onChange={(e) => setFormData({ ...formData, startTime: e.target.value })} />
+        </div>
+        <div>
+          <label className="block text-sm text-slate-300 mb-1">End Time</label>
+          <input type="time" className="w-full border border-slate-600 rounded-lg px-3 py-2 bg-slate-700/50 text-white" value={formData.endTime || ""} onChange={(e) => setFormData({ ...formData, endTime: e.target.value })} />
+        </div>
       </div>
-      <div>
-        <label className="block text-sm text-slate-300 mb-1">End Time</label>
-        <input type="time" className="w-full border border-slate-600 rounded-lg px-3 py-2 bg-slate-700/30 text-slate-400" value={formData.endTime || ""} readOnly />
-      </div>
-      <div>
-        <label className="block text-sm text-slate-300 mb-1">Installments Count</label>
+      {/* Auto-calculated duration */}
+      {formData.startTime && formData.endTime && computeDurationLabel(formData.startTime, formData.endTime) && (
+        <div className="flex items-center gap-2 px-3 py-2 bg-amber-500/10 border border-amber-500/30 rounded-lg">
+          <span className="text-slate-400 text-sm">Duration:</span>
+          <span className="text-amber-400 font-semibold text-sm">{computeDurationLabel(formData.startTime, formData.endTime)}</span>
+        </div>
+      )}
+      <div><label className="block text-sm text-slate-300 mb-1">Installments Count</label>
         <select className="w-full border border-slate-600 rounded-lg px-3 py-2 bg-slate-700/50 text-white" value={formData.installments_count ?? ""} onChange={(e) => setFormData({ ...formData, installments_count: Number(e.target.value), full_price: (Number(e.target.value) * Number(formData.installments_price || 0)).toFixed(2) })}>
           <option value="">Select</option>
           {Array.from({ length: 10 }, (_, i) => i + 1).map((n) => <option key={n} value={n}>{n}</option>)}
@@ -310,6 +310,29 @@ export default function ClassManagement() {
       </div>
       <div><label className="block text-sm text-slate-300 mb-1">Installment Price</label><input type="number" className="w-full border border-slate-600 rounded-lg px-3 py-2 bg-slate-700/50 text-white" placeholder="Installment Price" value={formData.installments_price || ""} onChange={(e) => setFormData({ ...formData, installments_price: e.target.value, full_price: (Number(e.target.value) * Number(formData.installments_count || 0)).toFixed(2) })} /></div>
       <div><label className="block text-sm text-slate-300 mb-1">Full Price</label><input type="number" className="w-full border border-slate-600 rounded-lg px-3 py-2 bg-slate-700/30 text-slate-400" value={formData.full_price || ""} disabled /></div>
+      <div>
+        <label className="block text-sm text-slate-300 mb-1">Class Start Month</label>
+        <input
+          type="month"
+          className="w-full border border-slate-600 rounded-lg px-3 py-2 bg-slate-700/50 text-white focus:ring-2 focus:ring-amber-500"
+          value={formData.startDate ? format(new Date(formData.startDate), "yyyy-MM") : ""}
+          onChange={(e) => setFormData({ ...formData, startDate: e.target.value ? `${e.target.value}-01` : "" })}
+        />
+        {formData.startDate && formData.installments_count && (
+          <div className="mt-2 p-3 bg-slate-700/30 rounded-lg border border-slate-600/50 space-y-1">
+            <p className="text-xs text-slate-400 font-medium">Installment Due Dates Preview:</p>
+            {Array.from({ length: Number(formData.installments_count) }, (_, i) => {
+              const d = new Date(`${formData.startDate}`);
+              d.setMonth(d.getMonth() + i);
+              return (
+                <p key={i} className="text-xs text-slate-300">
+                  Installment {i + 1}: <span className="text-amber-400">{format(d, "MMMM yyyy")}</span>
+                </p>
+              );
+            })}
+          </div>
+        )}
+      </div>
       <div className="flex gap-2 justify-end pt-2"><button className="px-4 py-2 bg-slate-600 text-white rounded-lg hover:bg-slate-500" onClick={closeModal}>Cancel</button><button className="px-4 py-2 bg-amber-500 text-slate-900 rounded-lg font-medium hover:bg-amber-400" onClick={handleSubmit}>{formData.id ? "Update" : "Add"}</button></div>
     </div>
   </div>

@@ -41,7 +41,11 @@ const getClassById = async (req: Request, res: Response, next: NextFunction) => 
     try {
       const newClass = await ClassService.createClass(req.body);
       res.status(201).json(newClass);
-    } catch (error) {
+    } catch (error: any) {
+      if (error?.message?.includes("Time slot conflict")) {
+        res.status(409).json({ message: error.message });
+        return;
+      }
       next(error);
     }
   };
@@ -54,7 +58,11 @@ const getClassById = async (req: Request, res: Response, next: NextFunction) => 
          return;
       }
       res.status(200).json(updated);
-    } catch (error) {
+    } catch (error: any) {
+      if (error?.message?.includes("Time slot conflict")) {
+        res.status(409).json({ message: error.message });
+        return;
+      }
       next(error);
     }
   };
@@ -162,18 +170,18 @@ const getClassById = async (req: Request, res: Response, next: NextFunction) => 
 
   const getPaymentInstallments = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const {status,date}=req.params
+      const { status, date } = req.params;
 
-      if(status !== "All" && status !== "Done" && status !== "Missing" || !date){
-        res.status(400).json({ message: "Id is required" });
+      if (status !== "All" && status !== "Done" && status !== "Missing") {
+        res.status(400).json({ message: "Invalid status" });
         return;
       }
-      const foundClass = await ClassService.getPaymentInstallments(status,new Date(date));
-      if (!foundClass) {
-         res.status(404).json({ message: "Class not found" });
-         return;
-      }
-      res.status(200).json(foundClass);
+
+      // date = "all" means no date filter
+      const dateFilter = date === "all" ? null : new Date(date);
+
+      const foundClass = await ClassService.getPaymentInstallments(status, dateFilter);
+      res.status(200).json(foundClass ?? []);
     } catch (error) {
       next(error);
     }
