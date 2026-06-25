@@ -37,6 +37,7 @@ interface AppointmentItem {
   status: string;
   cancelRequested?: boolean;
   cancelReason?: string | null;
+  createdAt?: string;
   user: User;
   appointment: { id: number; date: string; status: string; note: string | null };
 }
@@ -218,7 +219,7 @@ export default function AppointmentManagement() {
         <div className="flex flex-wrap gap-4 mb-6 items-end">
           <div className="flex items-center gap-2">
             <button
-              onClick={() => setListAllMode(true)}
+              onClick={() => { setListAllMode(true); setSelectedDate(""); }}
               className={`px-4 py-2 rounded-lg font-medium transition-all ${
                 listAllMode
                   ? "bg-amber-500 text-slate-900"
@@ -311,9 +312,11 @@ export default function AppointmentManagement() {
                   <tr>
                     <th className="px-6 py-4">Date</th>
                     <th className="px-6 py-4">Time</th>
+                    <th className="px-6 py-4">Type</th>
                     <th className="px-6 py-4">Status</th>
                     <th className="px-6 py-4">User</th>
                     <th className="px-6 py-4">Contact</th>
+                    <th className="px-6 py-4">Booked At</th>
                     <th className="px-6 py-4">Cancel Reason</th>
                     <th className="px-6 py-4">Action</th>
                   </tr>
@@ -350,6 +353,11 @@ export default function AppointmentManagement() {
                       </td>
                       <td className="px-6 py-4 text-slate-300">
                         {detail.user?.contactNumber ?? "-"}
+                      </td>
+                      <td className="px-6 py-4 text-slate-300 text-xs">
+                        {detail.createdAt
+                          ? format(new Date(detail.createdAt), "MMM d, yyyy h:mm a")
+                          : "-"}
                       </td>
                       <td className="px-6 py-4">
                         {detail.cancelRequested && detail.cancelReason ? (

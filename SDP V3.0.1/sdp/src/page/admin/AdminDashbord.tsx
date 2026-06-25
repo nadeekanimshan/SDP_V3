@@ -62,7 +62,7 @@ export default function AdminDashboard() {
 
   return (
     <section className="flex h-screen">
-      <ToastContainer position="top-center" autoClose={3000} />
+      <ToastContainer position="top-center" autoClose={3000} style={{ zIndex: 99999999 }} />
       {/* Sidebar */}
       <div
         className={`bg-slate-900 border-r border-slate-700/50 text-white p-4 flex flex-col space-y-4 ${

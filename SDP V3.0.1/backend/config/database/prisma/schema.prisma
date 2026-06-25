@@ -156,6 +156,7 @@ model VocalRecordingAppointmentDetail {
     cancelReason      String? @map("cancel_reason")
     cancelApprovedAt  DateTime? @map("cancel_approved_at")
     rejectReason      String? @map("reject_reason")
+    createdAt         DateTime  @default(now()) @map("created_at")
 
     user       User     @relation(fields: [user_id], references: [id])
     appointment       VocalRecordingAppointment     @relation(fields: [appointment_id], references: [id])

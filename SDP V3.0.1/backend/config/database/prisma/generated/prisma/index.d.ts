@@ -11035,6 +11035,7 @@ export namespace Prisma {
     cancelReason: string | null
     cancelApprovedAt: Date | null
     rejectReason: string | null
+    createdAt: Date | null
   }
 
   export type VocalRecordingAppointmentDetailMaxAggregateOutputType = {
@@ -11051,6 +11052,7 @@ export namespace Prisma {
     cancelReason: string | null
     cancelApprovedAt: Date | null
     rejectReason: string | null
+    createdAt: Date | null
   }
 
   export type VocalRecordingAppointmentDetailCountAggregateOutputType = {
@@ -11067,6 +11069,7 @@ export namespace Prisma {
     cancelReason: number
     cancelApprovedAt: number
     rejectReason: number
+    createdAt: number
     _all: number
   }
 
@@ -11097,6 +11100,7 @@ export namespace Prisma {
     cancelReason?: true
     cancelApprovedAt?: true
     rejectReason?: true
+    createdAt?: true
   }
 
   export type VocalRecordingAppointmentDetailMaxAggregateInputType = {
@@ -11113,6 +11117,7 @@ export namespace Prisma {
     cancelReason?: true
     cancelApprovedAt?: true
     rejectReason?: true
+    createdAt?: true
   }
 
   export type VocalRecordingAppointmentDetailCountAggregateInputType = {
@@ -11129,6 +11134,7 @@ export namespace Prisma {
     cancelReason?: true
     cancelApprovedAt?: true
     rejectReason?: true
+    createdAt?: true
     _all?: true
   }
 
@@ -11232,6 +11238,7 @@ export namespace Prisma {
     cancelReason: string | null
     cancelApprovedAt: Date | null
     rejectReason: string | null
+    createdAt: Date
     _count: VocalRecordingAppointmentDetailCountAggregateOutputType | null
     _avg: VocalRecordingAppointmentDetailAvgAggregateOutputType | null
     _sum: VocalRecordingAppointmentDetailSumAggregateOutputType | null
@@ -11267,6 +11274,7 @@ export namespace Prisma {
     cancelReason?: boolean
     cancelApprovedAt?: boolean
     rejectReason?: boolean
+    createdAt?: boolean
     user?: boolean | UserDefaultArgs<ExtArgs>
     appointment?: boolean | VocalRecordingAppointmentDefaultArgs<ExtArgs>
     payments?: boolean | VocalRecordingAppointmentDetail$paymentsArgs<ExtArgs>
@@ -11289,9 +11297,10 @@ export namespace Prisma {
     cancelReason?: boolean
     cancelApprovedAt?: boolean
     rejectReason?: boolean
+    createdAt?: boolean
   }
 
-  export type VocalRecordingAppointmentDetailOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "appointment_id" | "time_in" | "time_out" | "appointmentType" | "note" | "user_id" | "status" | "isCancel" | "cancelRequested" | "cancelReason" | "cancelApprovedAt" | "rejectReason", ExtArgs["result"]["vocalRecordingAppointmentDetail"]>
+  export type VocalRecordingAppointmentDetailOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "appointment_id" | "time_in" | "time_out" | "appointmentType" | "note" | "user_id" | "status" | "isCancel" | "cancelRequested" | "cancelReason" | "cancelApprovedAt" | "rejectReason" | "createdAt", ExtArgs["result"]["vocalRecordingAppointmentDetail"]>
   export type VocalRecordingAppointmentDetailInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     user?: boolean | UserDefaultArgs<ExtArgs>
     appointment?: boolean | VocalRecordingAppointmentDefaultArgs<ExtArgs>
@@ -11320,6 +11329,7 @@ export namespace Prisma {
       cancelReason: string | null
       cancelApprovedAt: Date | null
       rejectReason: string | null
+      createdAt: Date
     }, ExtArgs["result"]["vocalRecordingAppointmentDetail"]>
     composites: {}
   }
@@ -11705,6 +11715,7 @@ export namespace Prisma {
     readonly cancelReason: FieldRef<"VocalRecordingAppointmentDetail", 'String'>
     readonly cancelApprovedAt: FieldRef<"VocalRecordingAppointmentDetail", 'DateTime'>
     readonly rejectReason: FieldRef<"VocalRecordingAppointmentDetail", 'String'>
+    readonly createdAt: FieldRef<"VocalRecordingAppointmentDetail", 'DateTime'>
   }
     
 
@@ -13309,7 +13320,8 @@ export namespace Prisma {
     cancelRequested: 'cancelRequested',
     cancelReason: 'cancelReason',
     cancelApprovedAt: 'cancelApprovedAt',
-    rejectReason: 'rejectReason'
+    rejectReason: 'rejectReason',
+    createdAt: 'createdAt'
   };
 
   export type VocalRecordingAppointmentDetailScalarFieldEnum = (typeof VocalRecordingAppointmentDetailScalarFieldEnum)[keyof typeof VocalRecordingAppointmentDetailScalarFieldEnum]
@@ -14167,6 +14179,7 @@ export namespace Prisma {
     cancelReason?: StringNullableFilter<"VocalRecordingAppointmentDetail"> | string | null
     cancelApprovedAt?: DateTimeNullableFilter<"VocalRecordingAppointmentDetail"> | Date | string | null
     rejectReason?: StringNullableFilter<"VocalRecordingAppointmentDetail"> | string | null
+    createdAt?: DateTimeFilter<"VocalRecordingAppointmentDetail"> | Date | string
     user?: XOR<UserScalarRelationFilter, UserWhereInput>
     appointment?: XOR<VocalRecordingAppointmentScalarRelationFilter, VocalRecordingAppointmentWhereInput>
     payments?: PaymentListRelationFilter
@@ -14186,6 +14199,7 @@ export namespace Prisma {
     cancelReason?: SortOrderInput | SortOrder
     cancelApprovedAt?: SortOrderInput | SortOrder
     rejectReason?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
     user?: UserOrderByWithRelationInput
     appointment?: VocalRecordingAppointmentOrderByWithRelationInput
     payments?: PaymentOrderByRelationAggregateInput
@@ -14209,6 +14223,7 @@ export namespace Prisma {
     cancelReason?: StringNullableFilter<"VocalRecordingAppointmentDetail"> | string | null
     cancelApprovedAt?: DateTimeNullableFilter<"VocalRecordingAppointmentDetail"> | Date | string | null
     rejectReason?: StringNullableFilter<"VocalRecordingAppointmentDetail"> | string | null
+    createdAt?: DateTimeFilter<"VocalRecordingAppointmentDetail"> | Date | string
     user?: XOR<UserScalarRelationFilter, UserWhereInput>
     appointment?: XOR<VocalRecordingAppointmentScalarRelationFilter, VocalRecordingAppointmentWhereInput>
     payments?: PaymentListRelationFilter
@@ -14228,6 +14243,7 @@ export namespace Prisma {
     cancelReason?: SortOrderInput | SortOrder
     cancelApprovedAt?: SortOrderInput | SortOrder
     rejectReason?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
     _count?: VocalRecordingAppointmentDetailCountOrderByAggregateInput
     _avg?: VocalRecordingAppointmentDetailAvgOrderByAggregateInput
     _max?: VocalRecordingAppointmentDetailMaxOrderByAggregateInput
@@ -14252,6 +14268,7 @@ export namespace Prisma {
     cancelReason?: StringNullableWithAggregatesFilter<"VocalRecordingAppointmentDetail"> | string | null
     cancelApprovedAt?: DateTimeNullableWithAggregatesFilter<"VocalRecordingAppointmentDetail"> | Date | string | null
     rejectReason?: StringNullableWithAggregatesFilter<"VocalRecordingAppointmentDetail"> | string | null
+    createdAt?: DateTimeWithAggregatesFilter<"VocalRecordingAppointmentDetail"> | Date | string
   }
 
   export type PaymentWhereInput = {
@@ -15024,6 +15041,7 @@ export namespace Prisma {
     cancelReason?: string | null
     cancelApprovedAt?: Date | string | null
     rejectReason?: string | null
+    createdAt?: Date | string
     user: UserCreateNestedOneWithoutAppointmentsInput
     appointment: VocalRecordingAppointmentCreateNestedOneWithoutDetailsInput
     payments?: PaymentCreateNestedManyWithoutAppointmentInput
@@ -15043,6 +15061,7 @@ export namespace Prisma {
     cancelReason?: string | null
     cancelApprovedAt?: Date | string | null
     rejectReason?: string | null
+    createdAt?: Date | string
     payments?: PaymentUncheckedCreateNestedManyWithoutAppointmentInput
   }
 
@@ -15057,6 +15076,7 @@ export namespace Prisma {
     cancelReason?: NullableStringFieldUpdateOperationsInput | string | null
     cancelApprovedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     rejectReason?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     user?: UserUpdateOneRequiredWithoutAppointmentsNestedInput
     appointment?: VocalRecordingAppointmentUpdateOneRequiredWithoutDetailsNestedInput
     payments?: PaymentUpdateManyWithoutAppointmentNestedInput
@@ -15076,6 +15096,7 @@ export namespace Prisma {
     cancelReason?: NullableStringFieldUpdateOperationsInput | string | null
     cancelApprovedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     rejectReason?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     payments?: PaymentUncheckedUpdateManyWithoutAppointmentNestedInput
   }
 
@@ -15093,6 +15114,7 @@ export namespace Prisma {
     cancelReason?: string | null
     cancelApprovedAt?: Date | string | null
     rejectReason?: string | null
+    createdAt?: Date | string
   }
 
   export type VocalRecordingAppointmentDetailUpdateManyMutationInput = {
@@ -15106,6 +15128,7 @@ export namespace Prisma {
     cancelReason?: NullableStringFieldUpdateOperationsInput | string | null
     cancelApprovedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     rejectReason?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type VocalRecordingAppointmentDetailUncheckedUpdateManyInput = {
@@ -15122,6 +15145,7 @@ export namespace Prisma {
     cancelReason?: NullableStringFieldUpdateOperationsInput | string | null
     cancelApprovedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     rejectReason?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type PaymentCreateInput = {
@@ -15949,6 +15973,7 @@ export namespace Prisma {
     cancelReason?: SortOrder
     cancelApprovedAt?: SortOrder
     rejectReason?: SortOrder
+    createdAt?: SortOrder
   }
 
   export type VocalRecordingAppointmentDetailAvgOrderByAggregateInput = {
@@ -15971,6 +15996,7 @@ export namespace Prisma {
     cancelReason?: SortOrder
     cancelApprovedAt?: SortOrder
     rejectReason?: SortOrder
+    createdAt?: SortOrder
   }
 
   export type VocalRecordingAppointmentDetailMinOrderByAggregateInput = {
@@ -15987,6 +16013,7 @@ export namespace Prisma {
     cancelReason?: SortOrder
     cancelApprovedAt?: SortOrder
     rejectReason?: SortOrder
+    createdAt?: SortOrder
   }
 
   export type VocalRecordingAppointmentDetailSumOrderByAggregateInput = {
@@ -16965,6 +16992,7 @@ export namespace Prisma {
     cancelReason?: string | null
     cancelApprovedAt?: Date | string | null
     rejectReason?: string | null
+    createdAt?: Date | string
     appointment: VocalRecordingAppointmentCreateNestedOneWithoutDetailsInput
     payments?: PaymentCreateNestedManyWithoutAppointmentInput
   }
@@ -16982,6 +17010,7 @@ export namespace Prisma {
     cancelReason?: string | null
     cancelApprovedAt?: Date | string | null
     rejectReason?: string | null
+    createdAt?: Date | string
     payments?: PaymentUncheckedCreateNestedManyWithoutAppointmentInput
   }
 
@@ -17142,6 +17171,7 @@ export namespace Prisma {
     cancelReason?: StringNullableFilter<"VocalRecordingAppointmentDetail"> | string | null
     cancelApprovedAt?: DateTimeNullableFilter<"VocalRecordingAppointmentDetail"> | Date | string | null
     rejectReason?: StringNullableFilter<"VocalRecordingAppointmentDetail"> | string | null
+    createdAt?: DateTimeFilter<"VocalRecordingAppointmentDetail"> | Date | string
   }
 
   export type Class_StudentUpsertWithWhereUniqueWithoutStudentInput = {
@@ -17730,6 +17760,7 @@ export namespace Prisma {
     cancelReason?: string | null
     cancelApprovedAt?: Date | string | null
     rejectReason?: string | null
+    createdAt?: Date | string
     user: UserCreateNestedOneWithoutAppointmentsInput
     payments?: PaymentCreateNestedManyWithoutAppointmentInput
   }
@@ -17747,6 +17778,7 @@ export namespace Prisma {
     cancelReason?: string | null
     cancelApprovedAt?: Date | string | null
     rejectReason?: string | null
+    createdAt?: Date | string
     payments?: PaymentUncheckedCreateNestedManyWithoutAppointmentInput
   }
 
@@ -18028,6 +18060,7 @@ export namespace Prisma {
     cancelReason?: string | null
     cancelApprovedAt?: Date | string | null
     rejectReason?: string | null
+    createdAt?: Date | string
     user: UserCreateNestedOneWithoutAppointmentsInput
     appointment: VocalRecordingAppointmentCreateNestedOneWithoutDetailsInput
   }
@@ -18046,6 +18079,7 @@ export namespace Prisma {
     cancelReason?: string | null
     cancelApprovedAt?: Date | string | null
     rejectReason?: string | null
+    createdAt?: Date | string
   }
 
   export type VocalRecordingAppointmentDetailCreateOrConnectWithoutPaymentsInput = {
@@ -18127,6 +18161,7 @@ export namespace Prisma {
     cancelReason?: NullableStringFieldUpdateOperationsInput | string | null
     cancelApprovedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     rejectReason?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     user?: UserUpdateOneRequiredWithoutAppointmentsNestedInput
     appointment?: VocalRecordingAppointmentUpdateOneRequiredWithoutDetailsNestedInput
   }
@@ -18145,6 +18180,7 @@ export namespace Prisma {
     cancelReason?: NullableStringFieldUpdateOperationsInput | string | null
     cancelApprovedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     rejectReason?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type AttendanceCreateManyUserInput = {
@@ -18168,6 +18204,7 @@ export namespace Prisma {
     cancelReason?: string | null
     cancelApprovedAt?: Date | string | null
     rejectReason?: string | null
+    createdAt?: Date | string
   }
 
   export type Class_StudentCreateManyStudentInput = {
@@ -18227,6 +18264,7 @@ export namespace Prisma {
     cancelReason?: NullableStringFieldUpdateOperationsInput | string | null
     cancelApprovedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     rejectReason?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     appointment?: VocalRecordingAppointmentUpdateOneRequiredWithoutDetailsNestedInput
     payments?: PaymentUpdateManyWithoutAppointmentNestedInput
   }
@@ -18244,6 +18282,7 @@ export namespace Prisma {
     cancelReason?: NullableStringFieldUpdateOperationsInput | string | null
     cancelApprovedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     rejectReason?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     payments?: PaymentUncheckedUpdateManyWithoutAppointmentNestedInput
   }
 
@@ -18260,6 +18299,7 @@ export namespace Prisma {
     cancelReason?: NullableStringFieldUpdateOperationsInput | string | null
     cancelApprovedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     rejectReason?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type Class_StudentUpdateWithoutStudentInput = {
@@ -18499,6 +18539,7 @@ export namespace Prisma {
     cancelReason?: string | null
     cancelApprovedAt?: Date | string | null
     rejectReason?: string | null
+    createdAt?: Date | string
   }
 
   export type VocalRecordingAppointmentDetailUpdateWithoutAppointmentInput = {
@@ -18512,6 +18553,7 @@ export namespace Prisma {
     cancelReason?: NullableStringFieldUpdateOperationsInput | string | null
     cancelApprovedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     rejectReason?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     user?: UserUpdateOneRequiredWithoutAppointmentsNestedInput
     payments?: PaymentUpdateManyWithoutAppointmentNestedInput
   }
@@ -18529,6 +18571,7 @@ export namespace Prisma {
     cancelReason?: NullableStringFieldUpdateOperationsInput | string | null
     cancelApprovedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     rejectReason?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     payments?: PaymentUncheckedUpdateManyWithoutAppointmentNestedInput
   }
 
@@ -18545,6 +18588,7 @@ export namespace Prisma {
     cancelReason?: NullableStringFieldUpdateOperationsInput | string | null
     cancelApprovedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     rejectReason?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type PaymentCreateManyAppointmentInput = {

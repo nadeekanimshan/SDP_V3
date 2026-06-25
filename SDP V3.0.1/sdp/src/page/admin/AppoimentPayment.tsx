@@ -54,24 +54,26 @@ export default function AppoimentPayment() {
   const fetchUsers = async () => {
     setIsLoadingUsers(true);
     try {
-      const res = await UseAxios("users", "GET");
-      console.log("Users API response:", res);
-      let allUsers: User[] = [];
-      
-      // Handle different response structures
-      if (Array.isArray(res)) {
-        allUsers = res;
-      } else if (Array.isArray(res?.data)) {
-        allUsers = res.data;
-      } else if (res?.data && typeof res.data === 'object') {
-        allUsers = Object.values(res.data);
-      }
-      
-      console.log("All users:", allUsers);
-      // Filter to only show users who have made appointments (typeId !== 1 means not admin)
-      const clientUsers = allUsers.filter((u: any) => u.typeId !== 1);
-      console.log("Client users (filtered):", clientUsers);
-      setUsers(clientUsers);
+      // Fetch all appointments to extract users who have at least one appointment
+      const res = await UseAxios("appointments/list/all", "GET");
+      const allApts: any[] = Array.isArray(res?.data) ? res.data : [];
+
+      // Extract unique users from appointments
+      const userMap = new Map<number, User>();
+      allApts.forEach((apt: any) => {
+        const u = apt.user;
+        if (u && !userMap.has(u.id)) {
+          userMap.set(u.id, {
+            id: u.id,
+            firstName: u.firstName,
+            lastName: u.lastName,
+            contactNumber: u.contactNumber,
+            email: u.email,
+          });
+        }
+      });
+
+      setUsers(Array.from(userMap.values()));
     } catch (error) {
       console.error("Error fetching users:", error);
       setUsers([]);
@@ -132,7 +134,9 @@ export default function AppoimentPayment() {
     `${user.firstName} ${user.lastName}`.toLowerCase().includes(search.toLowerCase())
   );
 
-  const filteredPayments = statusFilter
+  const filteredPayments = statusFilter === "no_payment"
+    ? userPayments.filter((p) => !p.paymentStatus)
+    : statusFilter
     ? userPayments.filter((p) => p.paymentStatus?.toLowerCase() === statusFilter)
     : userPayments;
 
@@ -242,7 +246,7 @@ export default function AppoimentPayment() {
           <option value="">All Statuses</option>
           <option value="done">Done</option>
           <option value="partially_done">Partially Done</option>
-          <option value="">No Payment</option>
+          <option value="no_payment">No Payment</option>
         </select>
       </div>
 

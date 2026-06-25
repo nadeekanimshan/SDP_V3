@@ -227,7 +227,8 @@ exports.Prisma.VocalRecordingAppointmentDetailScalarFieldEnum = {
   cancelRequested: 'cancelRequested',
   cancelReason: 'cancelReason',
   cancelApprovedAt: 'cancelApprovedAt',
-  rejectReason: 'rejectReason'
+  rejectReason: 'rejectReason',
+  createdAt: 'createdAt'
 };
 
 exports.Prisma.PaymentScalarFieldEnum = {

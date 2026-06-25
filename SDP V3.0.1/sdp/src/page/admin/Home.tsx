@@ -578,7 +578,7 @@ export default function Home({ onNavigate }: HomeProps) {
 
   return (
     <div className="flex-1 min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 p-6">
-      <ToastContainer position="top-center" autoClose={4000} />
+      <ToastContainer position="top-center" autoClose={4000} style={{ zIndex: 99999999 }} />
       <div className="max-w-7xl mx-auto">
         {/* Quick Access */}
         {onNavigate && (

@@ -284,7 +284,21 @@ const getAllAppointments = async (filters?: GetAllAppointmentsFilters) => {
 
     const details = await prisma.vocalRecordingAppointmentDetail.findMany({
         where,
-        include: {
+        select: {
+            id: true,
+            appointment_id: true,
+            time_in: true,
+            time_out: true,
+            appointmentType: true,
+            note: true,
+            user_id: true,
+            status: true,
+            isCancel: true,
+            cancelRequested: true,
+            cancelReason: true,
+            cancelApprovedAt: true,
+            rejectReason: true,
+            createdAt: true,
             user: {
                 select: {
                     id: true,
